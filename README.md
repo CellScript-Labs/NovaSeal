@@ -1,18 +1,75 @@
 # NovaSeal
 
-NovaSeal protocol packages, profiles, schemas, fixtures, proof artefacts, and local evidence tooling for CellScript.
+NovaSeal is a collection of CellScript protocol profiles for sealing, transferring, and proving CKB state with Bitcoin-aware evidence.
 
-## Layout
+Use this repository if you want to inspect or build from the protocol packages themselves: the `.cell` contracts, schema notes, fixtures, proof plans, and devnet evidence tooling are all here. The main CellScript compiler repository consumes this repo as a submodule, but NovaSeal is now maintained as its own project.
 
-- `v0-mvp-skeleton/`: canonical v0 MVP skeleton and core profile.
-- `agreement-profile-v0/`: Agreement profile.
-- `fungible-xudt-profile-v0/`: fungible xUDT profile.
-- `rwa-receipt-profile-v0/`: RWA receipt profile.
-- `btc-transaction-commitment-profile-v0/`: BTC transaction commitment profile.
-- `btc-utxo-seal-profile-v0/`: BTC UTXO seal profile.
-- `dual-seal-profile-v0/`: dual seal profile.
-- `fiber-candidate-profile-v0/`: Fiber candidate profile.
-- `scripts/`: evidence, wallet, SPV, attestation, and devnet tooling used by the profiles.
+## Who This Is For
 
-The parent CellScript compiler repository consumes this repository as a submodule at `proposals/novaseal`.
+- Protocol designers evaluating sealed state flows on CKB.
+- Builders who want concrete CellScript examples beyond toy contracts.
+- Auditors who need fixtures, schema notes, and proof evidence in one place.
+- CellScript contributors maintaining the NovaSeal-facing compiler and tooling surface.
 
+## What Is Inside
+
+| Path | What it gives you |
+| --- | --- |
+| `v0-mvp-skeleton/` | The original NovaSeal v0 MVP shape: BTC-authorised CKB Cell transitions, receipt proofs, and verifier shell work. |
+| `agreement-profile-v0/` | A CKB-native agreement profile for pre-agreed terminal settlement paths. |
+| `fungible-xudt-profile-v0/` | xUDT issue, transfer, and settlement lifecycle examples. |
+| `rwa-receipt-profile-v0/` | Receipt materialisation and claim/settlement lifecycle examples for RWA-style flows. |
+| `btc-transaction-commitment-profile-v0/` | A public BTC transaction commitment seal profile. |
+| `btc-utxo-seal-profile-v0/` | A single-use BTC UTXO closure seal profile. |
+| `dual-seal-profile-v0/` | A combined BTC UTXO closure plus CKB maturity profile. |
+| `fiber-candidate-profile-v0/` | Candidate settlement modelling for Fiber-facing flows. |
+| `scripts/` | Local evidence, wallet-vector, SPV, attestation, and devnet tooling. |
+
+## Quick Start
+
+Install the CellScript compiler first:
+
+```bash
+cargo install cellscript
+```
+
+Then build or check an individual profile:
+
+```bash
+cd v0-mvp-skeleton
+cellc check --target-profile ckb
+cellc build --target riscv64-asm --target-profile ckb
+```
+
+For a package-level integrity check, run:
+
+```bash
+cellc package verify --json
+```
+
+Some profiles include CKB VM harnesses and devnet scripts. Those checks need a local CKB toolchain, a local node, or the environment variables described in the relevant profile docs.
+
+## Evidence and Safety Notes
+
+NovaSeal is deliberately evidence-heavy. The profile directories include positive and negative fixtures, schema documents, proof-plan mappings, and audit status notes because protocol claims are only useful when they can be checked.
+
+Treat the repository as source and local evidence, not as a blanket mainnet deployment claim. Public deployment, live-cell identity, Bitcoin SPV evidence, and external attestation requirements are documented separately in the profile docs.
+
+## Relationship to CellScript
+
+CellScript is the compiler and package toolchain. NovaSeal is a set of protocol packages built with it.
+
+When checked out inside the CellScript compiler repository, this repo normally appears at:
+
+```text
+proposals/novaseal
+```
+
+When working on NovaSeal alone, use this repository directly and keep the CellScript compiler available as `cellc`.
+
+## Useful Next Reads
+
+- `v0-mvp-skeleton/README.md`
+- `v0-mvp-skeleton/docs/AUDIT_STATUS.md`
+- `agreement-profile-v0/docs/AGREEMENT_PROFILE.md`
+- `DEVNET_FULL_ACCEPTANCE_RUNBOOK.md`
