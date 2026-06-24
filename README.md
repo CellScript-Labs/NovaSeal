@@ -4,6 +4,18 @@ NovaSeal is a collection of CellScript protocol profiles for sealing, transferri
 
 Use this repository if you want to inspect or build from the protocol packages themselves: the `.cell` contracts, schema notes, fixtures, proof plans, and devnet evidence tooling are all here. The main CellScript compiler repository consumes this repo as a submodule, but NovaSeal is now maintained as its own project.
 
+## Core Model
+
+NovaSeal treats a seal as a typed state claim, not just as a signature check. A profile defines the CKB Cell shape, the intent or receipt data that must be committed, and the authority evidence that makes a transition acceptable.
+
+Most profiles follow the same pattern:
+
+```text
+old sealed state + intent/evidence + authorised action = new state or receipt
+```
+
+The Bitcoin-facing profiles add an explicit cross-chain boundary. They do not ask CKB to become Bitcoin; they bind CKB transitions to Bitcoin transaction, UTXO, SPV, wallet-signing, or attestation evidence that can be reviewed separately. That is why schema files, fixtures, proof-plan mappings, and devnet scripts live beside the CellScript source instead of being treated as after-the-fact examples.
+
 ## What Is Inside
 
 | Path | What it gives you |
