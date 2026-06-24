@@ -4,13 +4,6 @@ NovaSeal is a collection of CellScript protocol profiles for sealing, transferri
 
 Use this repository if you want to inspect or build from the protocol packages themselves: the `.cell` contracts, schema notes, fixtures, proof plans, and devnet evidence tooling are all here. The main CellScript compiler repository consumes this repo as a submodule, but NovaSeal is now maintained as its own project.
 
-## Who This Is For
-
-- Protocol designers evaluating sealed state flows on CKB.
-- Builders who want concrete CellScript examples beyond toy contracts.
-- Auditors who need fixtures, schema notes, and proof evidence in one place.
-- CellScript contributors maintaining the NovaSeal-facing compiler and tooling surface.
-
 ## What Is Inside
 
 | Path | What it gives you |
