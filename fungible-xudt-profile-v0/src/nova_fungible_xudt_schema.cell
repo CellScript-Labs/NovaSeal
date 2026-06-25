@@ -1,0 +1,79 @@
+module novaseal::fungible_xudt_schema::v0;
+
+// Shared schema-only types for the NovaSeal Fungible xUDT profile.
+// Both the profile action entry and the lifecycle type entry import these
+// definitions so their witness and commitment layouts cannot drift.
+
+struct SignaturePayload {
+    pubkey: [u8; 32],
+    signature: [u8; 64],
+}
+
+struct NovaSealCanonicalEnvelopeV0 {
+    profile_id: Hash,
+    policy_hash: Hash,
+    action: u8,
+    terminal_path: u8,
+    subject_id: Hash,
+    old_state_commitment: Hash,
+    new_state_commitment: Hash,
+    old_nonce: u64,
+    new_nonce: u64,
+    expiry: u64,
+    authority_hash: Hash,
+    profile_body_hash: Hash,
+    payout_commitment_hash: Hash,
+}
+
+struct NovaFungibleXudtIntentCoreV0 {
+    action: u8,
+    asset_id: Hash,
+    xudt_type_hash: Hash,
+    issuer_authority_hash: Hash,
+    old_holder_authority_hash: Hash,
+    new_holder_authority_hash: Hash,
+    old_status: u8,
+    new_status: u8,
+    old_amount: u64,
+    transfer_amount: u64,
+    new_amount: u64,
+    old_nonce: u64,
+    new_nonce: u64,
+    expiry: u64,
+    payout_commitment_hash: Hash,
+}
+
+struct NovaFungibleXudtSignedIntentV0 {
+    core: NovaFungibleXudtIntentCoreV0,
+    canonical_envelope_hash: Hash,
+    expected_receipt_hash: Hash,
+}
+
+struct NovaFungibleXudtStateCommitmentV0 {
+    version: u16,
+    asset_id: Hash,
+    xudt_type_hash: Hash,
+    issuer_authority_hash: Hash,
+    holder_authority_hash: Hash,
+    amount: u64,
+    status: u8,
+    nonce: u64,
+    expiry: u64,
+}
+
+struct NovaFungibleXudtReceiptCommitmentV0 {
+    action: u8,
+    asset_id: Hash,
+    xudt_type_hash: Hash,
+    old_holder_authority_hash: Hash,
+    new_holder_authority_hash: Hash,
+    old_status: u8,
+    new_status: u8,
+    old_amount: u64,
+    transfer_amount: u64,
+    new_amount: u64,
+    old_nonce: u64,
+    new_nonce: u64,
+    intent_core_hash: Hash,
+    payout_commitment_hash: Hash,
+}
