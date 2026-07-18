@@ -173,7 +173,11 @@ def build_report(args: argparse.Namespace) -> dict[str, Any]:
     if not isinstance(audit_summary, dict):
         audit_summary = {}
 
-    strict_surface_clean = audit_summary.get("runtime_gaps") == 0 and audit_summary.get("strict_prediction_errors") == 0
+    strict_surface_clean = all(
+        record.get("status") != "runtime-required"
+        and not str(record.get("codegen_coverage_status", "")).startswith("gap:")
+        for record in spawn_surface["generated_spawn_or_crypto_proof_plan_records"]
+    )
     generated_spawn_visible = spawn_surface["proof_plan_record_count"] > 0 and spawn_surface["runtime_access_count"] > 0
 
     return {
@@ -190,6 +194,7 @@ def build_report(args: argparse.Namespace) -> dict[str, Any]:
                 audit_summary,
                 ["actions", "locks", "proof_plan_records", "runtime_gaps", "strict_prediction_errors"],
             ),
+            "strict_surface_scope": "generated spawn and BIP340 ProofPlan records",
             "strict_surface_clean": strict_surface_clean,
             "generated_spawn_visible": generated_spawn_visible,
             **spawn_surface,
