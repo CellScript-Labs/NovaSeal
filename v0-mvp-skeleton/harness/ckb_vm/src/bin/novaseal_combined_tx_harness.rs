@@ -33,7 +33,7 @@ use serde_json::Value;
 use sha2::{Digest, Sha256};
 use thiserror::Error;
 
-const DEFAULT_PARENT_ELF: &str = "build/nova_state_type.elf";
+const DEFAULT_PARENT_ELF: &str = "target/novaseal-parent-lock-abi-preflight.elf";
 const DEFAULT_TYPE_ELF: &str = "target/novaseal-state-type-action.elf";
 const DEFAULT_CHILD_ELF: &str = "target/novaseal-btc-verifier-riscv-shell-release.elf";
 const DEFAULT_CANONICAL_VECTORS: &str = "target/novaseal-canonical-vectors.json";
