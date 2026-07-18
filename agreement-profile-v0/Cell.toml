@@ -23,7 +23,7 @@ exclude = []
 [build.dependencies]
 
 [policy]
-production = true
+production = false
 deny_fail_closed = false
 deny_ckb_runtime = false
 deny_runtime_obligations = false
