@@ -45,7 +45,7 @@ Current summary:
 core_unit_tests=7
 shell_lib_unit_tests=7
 riscv_binary_build=passed
-riscv_release_elf_size_bytes=187816
+riscv_release_elf_size_bytes=177056
 shell_vectors_total=105
 parse_ok=99
 parse_rejected=6
@@ -55,10 +55,10 @@ accepted=44
 rejected=61
 matched_expected=105
 all_expected_matched=true
-staged_release_elf_sha256=54f26ee955ab3ecbbacc3f5eef20ad3ffee9125c14241e8ea44b382618af2391
+staged_release_elf_sha256=037591e33e250272b495cbd25eb72026aee3133b5e387eabad27bb071a3d1664
 child_vm_executed=true
 child_vm_matched_expected=105
-child_vm_max_cycles=3487544
+child_vm_max_cycles=3467842
 ```
 
 The staged release ELF at `target/novaseal-btc-verifier-riscv-shell-release.elf` is now checked against the current release build by `scripts/novaseal_riscv_shell_artifact.py`. The preflight also confirms that the generated CellScript audit surface exposes the intended lock spawn/pipe/wait records.

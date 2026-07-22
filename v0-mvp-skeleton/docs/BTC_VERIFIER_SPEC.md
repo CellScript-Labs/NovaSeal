@@ -73,15 +73,15 @@ riscv_shell_rejected=61
 riscv_shell_matched_expected=105
 child_vm_checked=105
 child_vm_matched_expected=105
-child_vm_max_cycles=3487544
+child_vm_max_cycles=3467842
 parent_lock_ckb_vm_executed=true
 parent_spawn_executed=true
 parent_vm_matched_expected=4
-parent_vm_max_cycles=48783
+parent_vm_max_cycles=64389
 parent_resolved_script_verifier_matched_expected=true
-parent_resolved_script_verifier_max_cycles=3704249
+parent_resolved_script_verifier_max_cycles=3699141
 parent_full_transaction_verifier_matched_expected=true
-parent_full_transaction_verifier_max_cycles=3704249
+parent_full_transaction_verifier_max_cycles=3699141
 ```
 
 The positive set contains 4 deterministic test signers for each of the 11

@@ -169,8 +169,8 @@ expected_reject=10
 matched_expected=11
 node_stack_matched_expected=11
 shared_witness_size_bytes=398
-max_full_transaction_cycles=7521003
-max_node_stack_cycles=7521003
+max_full_transaction_cycles=7565341
+max_node_stack_cycles=7565341
 max_consensus_tx_size_bytes=1484
 max_output_occupied_capacity_shannons=70700000000
 ```
