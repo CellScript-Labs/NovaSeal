@@ -9,6 +9,13 @@ cargo check
 cargo test
 cargo clippy --lib -- -D warnings
 cargo build --target riscv64imac-unknown-none-elf --bin novaseal_btc_verifier_riscv
+./build_reproducible_release.sh
 ```
+
+The release script is the canonical pinned-artifact build. It remaps verifier
+and Cargo source paths, disables incremental compilation, and strips the final
+ELF with the pinned Rust toolchain's `rust-objcopy`. The resulting release ELF
+is byte-identical across the audited macOS arm64 and Linux amd64 builders.
+Install the `llvm-tools-preview` component before running it.
 
 This crate is evidence that the verifier shell boundary can compile for RISC-V, has a fixed spawn-input adapter, and makes the expected BIP340 decision over the frozen vector set. The staged ELF is executed by `../../harness/ckb_vm` with child-side inherited-fd input, by the parent-lock CKB VM harness, and by the combined lock/type transaction harness. Local devnet CellDep facts are pinned by the NovaSeal manifests and checked by the production gate; public/shared CellDep attestation and external TCB review remain open.

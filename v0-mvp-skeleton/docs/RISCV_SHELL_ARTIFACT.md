@@ -20,8 +20,8 @@ Current summary:
 ```text
 preflight_passed=true
 staged_matches_release=true
-staged_release_elf_size_bytes=177056
-staged_release_elf_sha256=037591e33e250272b495cbd25eb72026aee3133b5e387eabad27bb071a3d1664
+staged_release_elf_size_bytes=100912
+staged_release_elf_sha256=be66f22507b734c8a432c4c85f0079cc7461caaa92ee3277d50ea8f62ce95ff7
 generated_spawn_visible=true
 lock_wiring_status=wired_to_bip340_shell
 ready_for_ckb_vm_dry_run=true

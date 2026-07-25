@@ -75,7 +75,7 @@ def source_files() -> tuple[list[Path], list[str]]:
                 continue
             if not path.is_file():
                 continue
-            if path.suffix == ".rs" or path.name in {"Cargo.toml", "Cargo.lock", "README.md"}:
+            if path.suffix in {".rs", ".sh"} or path.name in {"Cargo.toml", "Cargo.lock", "README.md"}:
                 files.append(path)
     return sorted(files), sorted(invalid_paths)
 

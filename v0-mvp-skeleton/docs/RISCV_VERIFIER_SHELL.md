@@ -45,7 +45,7 @@ Current summary:
 core_unit_tests=7
 shell_lib_unit_tests=7
 riscv_binary_build=passed
-riscv_release_elf_size_bytes=177056
+riscv_release_elf_size_bytes=100912
 shell_vectors_total=105
 parse_ok=99
 parse_rejected=6
@@ -55,7 +55,7 @@ accepted=44
 rejected=61
 matched_expected=105
 all_expected_matched=true
-staged_release_elf_sha256=037591e33e250272b495cbd25eb72026aee3133b5e387eabad27bb071a3d1664
+staged_release_elf_sha256=be66f22507b734c8a432c4c85f0079cc7461caaa92ee3277d50ea8f62ce95ff7
 child_vm_executed=true
 child_vm_matched_expected=105
 child_vm_max_cycles=3467842
