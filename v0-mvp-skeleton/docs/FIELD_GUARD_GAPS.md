@@ -31,7 +31,7 @@ After:
 
 ```text
 cellc audit-bundle --target-profile ckb --json
-python3 scripts/novaseal_audit_surface.py --pretty
+cargo run --quiet --locked --manifest-path ../tools/Cargo.toml -- audit-surface --pretty
 ```
 
 the current audit surface reports:

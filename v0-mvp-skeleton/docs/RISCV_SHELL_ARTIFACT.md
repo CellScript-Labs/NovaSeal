@@ -12,7 +12,7 @@ This document records the exact verifier shell artifact that the current lock wi
 Run from the package root:
 
 ```bash
-python3 scripts/novaseal_riscv_shell_artifact.py --sync --pretty
+cargo run --quiet --locked --manifest-path ../tools/Cargo.toml -- riscv-shell-artifact --sync --pretty
 ```
 
 Current summary:

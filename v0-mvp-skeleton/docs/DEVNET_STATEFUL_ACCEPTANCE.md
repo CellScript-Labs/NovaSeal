@@ -40,14 +40,14 @@ in-memory `ResolvedTransaction` path.
 
 Current live evidence:
 
-- `scripts/novaseal_devnet_stateful_live.py --pretty --ckb-repo ../ckb --ckb-bin ../ckb/target/debug/ckb`
+- `cellscript-tools novaseal-core-devnet --pretty --ckb-repo ../ckb --ckb-bin ../ckb/target/debug/ckb`
   passed for core NovaSeal.
 - The runner deployed the BIP340 verifier and `novaseal_lifecycle` type script
   as live CellDeps, submitted bootstrap and key-auth transition transactions,
   verified the bootstrap state output was no longer live, verified the new state
   and receipt outputs were live, and confirmed a wrong-signature transition was
   rejected by dry-run without consuming the live state.
-- `scripts/novaseal_agreement_devnet_stateful_live.py --pretty --ckb-repo ../ckb --ckb-bin ../ckb/target/debug/ckb`
+- `cellscript-tools novaseal-agreement-devnet --pretty --ckb-repo ../ckb --ckb-bin ../ckb/target/debug/ckb`
   passed for the Agreement Profile.
 - The Agreement runner deployed the BIP340 verifier and
   `nova_agreement_lifecycle` type script as live CellDeps, submitted separate

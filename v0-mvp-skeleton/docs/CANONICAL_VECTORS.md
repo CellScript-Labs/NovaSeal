@@ -1,7 +1,7 @@
 # NovaSeal v0 Canonical Test Vectors
 
 **Date**: 2026-05-31
-**Generator**: `scripts/novaseal_canonical_vectors.py`
+**Generator**: `../tools/src/canonical_vectors.rs`
 **Report**: `target/novaseal-canonical-vectors.json`
 **Encoding profile**: `packed-fixed-v0-reference`
 
@@ -10,7 +10,7 @@ current fixture JSON files and `target/novaseal-schema-layout.json`.
 
 It is not Molecule output, not CKB VM witness encoding, and not BTC wallet
 signing material. Fixed-width wallet signing vectors are generated separately
-by `/home/arthur/a19q3/CellScript/scripts/novaseal_wallet_signing_vectors.py`
+by `cellscript-tools wallet-signing-vectors`
 into `/home/arthur/a19q3/CellScript/target/novaseal-wallet-signing-vectors.json`.
 These canonical vectors are the input/foundation layer, not the final signing
 layer.
@@ -20,8 +20,8 @@ layer.
 Run:
 
 ```bash
-python3 scripts/novaseal_schema_layout.py --pretty
-python3 scripts/novaseal_canonical_vectors.py --pretty
+cargo run --quiet --locked --manifest-path ../tools/Cargo.toml -- schema-layout --pretty
+cargo run --quiet --locked --manifest-path ../tools/Cargo.toml -- canonical-vectors --pretty
 ```
 
 Current summary:

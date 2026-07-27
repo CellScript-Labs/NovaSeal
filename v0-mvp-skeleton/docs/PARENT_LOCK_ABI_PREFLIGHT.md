@@ -1,7 +1,7 @@
 # NovaSeal Parent Lock ABI Preflight
 
 **Date**: 2026-05-30
-**Script**: `scripts/novaseal_parent_lock_abi_preflight.py`
+**Script**: `../tools/src/parent_lock_preflight.rs`
 **Report**: `target/novaseal-parent-lock-abi-preflight.json`
 **Classification**: parent lock ELF/ASM ABI preflight.
 
@@ -12,7 +12,7 @@ This preflight builds the `btc_authority` parent lock as both RISC-V assembly an
 Run:
 
 ```bash
-python3 scripts/novaseal_parent_lock_abi_preflight.py --pretty
+cargo run --quiet --locked --manifest-path ../tools/Cargo.toml -- parent-lock-abi-preflight --pretty
 ```
 
 Current summary:

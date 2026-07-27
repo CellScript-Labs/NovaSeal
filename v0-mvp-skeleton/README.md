@@ -10,31 +10,31 @@ CellDep attestation and external BIP340 TCB review.
 
 **ProofPlan mapping**: See [proofs/proofplan_mapping.json](proofs/proofplan_mapping.json) — the brutally honest, machine-readable comparison of the 9 strict acceptance criteria against the **real generated** `cellc audit-bundle` output.
 
-**Derived audit surface**: Run `python3 scripts/novaseal_audit_surface.py --pretty` after `cellc audit-bundle --target-profile ckb --json` to produce `target/novaseal-audit-surface.json`, a narrow NovaSeal-specific summary of actions, locks, ProofPlan gaps, field-guard visibility, strict-mode predictions, and combined transaction measurement evidence when present.
+**Derived audit surface**: Run `cargo run --quiet --locked --manifest-path ../tools/Cargo.toml -- audit-surface --pretty` after `cellc audit-bundle --target-profile ckb --json` to produce `target/novaseal-audit-surface.json`, a narrow NovaSeal-specific summary of actions, locks, ProofPlan gaps, field-guard visibility, strict-mode predictions, and combined transaction measurement evidence when present.
 
-**Fixture harness**: Run `python3 scripts/novaseal_fixture_harness.py --pretty` after the audit-surface extraction to produce `target/novaseal-fixture-report.json`. This keeps the source-model transition evidence and attaches child-verifier VM, parent-lock ABI preflight, parent-lock CKB VM, state-type CKB VM, and combined eleven-fixture transaction-verifier reports when present.
+**Fixture harness**: Run `cargo run --quiet --locked --manifest-path ../tools/Cargo.toml -- fixture-harness --pretty` after the audit-surface extraction to produce `target/novaseal-fixture-report.json`. This keeps the source-model transition evidence and attaches child-verifier VM, parent-lock ABI preflight, parent-lock CKB VM, state-type CKB VM, and combined eleven-fixture transaction-verifier reports when present.
 
 **Rust harness boundary**: The Rust code under `harness/ckb_vm` is local evidence-generation tooling only. It is not part of the deployed NovaSeal contract surface, is not a runtime verifier CellDep, and is not called by the `.cell` code. Deployed/runtime verifier wiring is represented by `verifier::btc::bip340::require_signature(...)` plus the manifest-bound `cellscript_btc_bip340_verifier_riscv` CellDep.
 
 **State type CKB VM harness**: Build the action artifact with `/home/arthur/a19q3/CellScript/target/debug/cellc src/nova_state_type.cell --target riscv64-elf --target-profile ckb --entry-action key_auth_transition -o target/novaseal-state-type-action.elf`, then run `cargo run --manifest-path harness/ckb_vm/Cargo.toml --bin novaseal_state_type_harness -- --pretty`. This executes `key_auth_transition` in `ckb-vm` for all eleven fixtures at action/type scope. The `.cell` intent ABI now uses `NovaSealSignedIntentV0 { core, expected_receipt_hash }`; the packed signed-intent size is 254 bytes. The action and lock parse the same 398-byte `CSARGv1` witness payload order (`NovaSealSignedIntentV0`, `state_hash_commitment`, `SignaturePayload`), and the combined lock+type harness exercises that shared payload at full transaction verifier level.
 
-**Schema layout**: Run `python3 scripts/novaseal_schema_layout.py --pretty` to produce `target/novaseal-schema-layout.json`, the current packed fixed-layout reference derived from the three `.schema` files. This is not yet full Molecule output.
+**Schema layout**: Run `cargo run --quiet --locked --manifest-path ../tools/Cargo.toml -- schema-layout --pretty` to produce `target/novaseal-schema-layout.json`, the current packed fixed-layout reference derived from the three `.schema` files. This is not yet full Molecule output.
 
-**Canonical vectors**: Run `python3 scripts/novaseal_canonical_vectors.py --pretty` after schema-layout extraction to produce `target/novaseal-canonical-vectors.json`, deterministic packed-reference test bytes for the eleven fixtures.
+**Canonical vectors**: Run `cargo run --quiet --locked --manifest-path ../tools/Cargo.toml -- canonical-vectors --pretty` after schema-layout extraction to produce `target/novaseal-canonical-vectors.json`, deterministic packed-reference test bytes for the eleven fixtures.
 
-**BTC verifier vectors**: Run `python3 scripts/novaseal_btc_verifier_vectors.py --pretty` after canonical-vector generation to produce `target/novaseal-btc-verifier-vectors.json`, reference BIP340/secp256k1 verifier vectors for the external TCB.
+**BTC verifier vectors**: Run `cargo run --quiet --locked --manifest-path ../tools/Cargo.toml -- btc-verifier-vectors --pretty` after canonical-vector generation to produce `target/novaseal-btc-verifier-vectors.json`, reference BIP340/secp256k1 verifier vectors for the external TCB.
 
-**BTC verifier IPC vectors**: Run `python3 scripts/novaseal_btc_verifier_ipc_vectors.py --pretty` after BTC verifier vector generation to produce `target/novaseal-btc-verifier-ipc-vectors.json`, the fixed lock-to-verifier request envelope vectors.
+**BTC verifier IPC vectors**: Run `cargo run --quiet --locked --manifest-path ../tools/Cargo.toml -- btc-verifier-ipc-vectors --pretty` after BTC verifier vector generation to produce `target/novaseal-btc-verifier-ipc-vectors.json`, the fixed lock-to-verifier request envelope vectors.
 
 **Child verifier CKB VM harness**: Run `cargo run --manifest-path harness/ckb_vm/Cargo.toml --bin novaseal_ckb_vm_harness -- --pretty` after staging the RISC-V shell artifact to produce `target/novaseal-ckb-vm-child-verifier-report.json`. This executes the staged child verifier ELF in `ckb-vm`, but still does not execute the parent lock or a full transaction.
 
-**Parent lock ABI preflight**: Run `python3 scripts/novaseal_parent_lock_abi_preflight.py --pretty` to build the `btc_authority` parent lock as ASM/ELF and check that Script.args binding, protected input binding, and VM2 spawn/pipe/wait surfaces are ready for a parent/child CKB VM harness. This is artifact inspection only, not parent-lock VM execution.
+**Parent lock ABI preflight**: Run `cargo run --quiet --locked --manifest-path ../tools/Cargo.toml -- parent-lock-abi-preflight --pretty` to build the `btc_authority` parent lock as ASM/ELF and check that Script.args binding, protected input binding, and VM2 spawn/pipe/wait surfaces are ready for a parent/child CKB VM harness. This is artifact inspection only, not parent-lock VM execution.
 
 **Parent lock CKB VM harness**: Run `cargo run --manifest-path harness/ckb_vm/Cargo.toml --bin novaseal_parent_lock_harness -- --pretty` after parent preflight and shell staging to produce `target/novaseal-parent-lock-ckb-vm-report.json`. This executes the parent lock ELF in `ckb-vm`, harnesses VM2 `spawn`, runs the staged child verifier ELF in nested `ckb-vm`, and records valid-signature accept, wrong-signature reject, wrong-pubkey-valid-signature reject, and authority-hash mismatch reject evidence. It also builds a `ckb-types` consensus-packed transaction shape and runs the official `ckb-script` resolved lock-group verifier plus full transaction script verifier with `cell_deps[0]`, parent lock dep, lock ScriptGroup shape, tx size, occupied capacity, under-capacity shape checks, and verifier cycles. It is still a harnessed parent-authority path; the separate combined harness covers all eleven transition fixtures, and the live devnet runner covers the core stateful lifecycle.
 
 **Combined lock + type transaction harness**: Run `cargo run --manifest-path harness/ckb_vm/Cargo.toml --bin novaseal_combined_tx_harness -- --pretty` after building the parent lock, state action, and child verifier artifacts to produce `target/novaseal-combined-tx-report.json`. This runs all eleven fixtures through official `ckb-script` full transaction verification and the CKB `ckb-verification` non-contextual + contextual transaction verifier stack with both the parent lock and state type/action script present, a shared 398-byte `CSARGv1` witness payload, materialised `ProofReceiptV0` data at `Output#1`, and `cell_deps[0]` bound to the staged verifier shell. It also records builder-candidate fee, occupied-capacity, under-capacity, tx-size, and code-dep-role shape checks derived from the constructed transaction plus resolved deps. Negative fixtures must match both accept/reject outcome and expected lock/type script scope in both verifier layers. This is local node-verification-stack evidence over deterministic builder outputs; the live devnet runner is the separate stateful RPC evidence layer.
 
-**Devnet stateful gate**: Run `/home/arthur/a19q3/CellScript/scripts/novaseal_devnet_stateful_acceptance.sh --pretty` to produce `/home/arthur/a19q3/CellScript/target/novaseal-devnet-stateful-acceptance.json`. The core lifecycle blockers are resolved by `src/nova_state_lifecycle_type.cell:novaseal_lifecycle`, and `python3 /home/arthur/a19q3/CellScript/scripts/novaseal_devnet_stateful_live.py --pretty --ckb-repo /home/arthur/a19q3/ckb --ckb-bin /home/arthur/a19q3/ckb/target/debug/ckb` now provides live core bootstrap -> key-auth transition evidence. `python3 /home/arthur/a19q3/CellScript/scripts/novaseal_agreement_devnet_stateful_live.py --pretty --ckb-repo /home/arthur/a19q3/ckb --ckb-bin /home/arthur/a19q3/ckb/target/debug/ckb` provides Agreement originate -> repay, originate -> claim, and live negative-case evidence. With only public BTC/Fiber endpoint evidence outstanding, the aggregate gate reports `local_devnet_passed_external_endpoint_required` and exits successfully for local acceptance; full production/external completeness still requires `status=passed` and `blockers=0`. See [docs/DEVNET_STATEFUL_ACCEPTANCE.md](docs/DEVNET_STATEFUL_ACCEPTANCE.md).
+**Devnet stateful gate**: Run `/home/arthur/a19q3/CellScript/scripts/novaseal_devnet_stateful_acceptance.sh --pretty` to produce `/home/arthur/a19q3/CellScript/target/novaseal-devnet-stateful-acceptance.json`. The core lifecycle blockers are resolved by `src/nova_state_lifecycle_type.cell:novaseal_lifecycle`. The Rust `cellscript-tools novaseal-core-devnet` runner provides live core bootstrap -> key-auth transition evidence, while `cellscript-tools novaseal-agreement-devnet` provides Agreement originate -> repay, originate -> claim, and live negative-case evidence. With only public BTC/Fiber endpoint evidence outstanding, the aggregate gate reports `local_devnet_passed_external_endpoint_required` and exits successfully for local acceptance; full production/external completeness still requires `status=passed` and `blockers=0`. See [docs/DEVNET_STATEFUL_ACCEPTANCE.md](docs/DEVNET_STATEFUL_ACCEPTANCE.md).
 
 **Purpose**: Set up the strict feasibility target for the core NovaSeal v0 thesis ("BTC key or multisig authorises a typed CKB Cell transition under explicit policy, with nonce/expiry replay protection and an auditable ProofReceipt") as a first-class CellScript package using current 0.16 capabilities where available.
 
@@ -96,17 +96,7 @@ novaseal-v0-mvp-skeleton/
 │   ├── RECEIPT_COMMITMENT_SPEC.md
 │   ├── SCHEMA_LAYOUT.md       # packed fixed-layout reference from schemas/
 │   └── CANONICAL_VECTORS.md   # deterministic packed-reference fixture vectors
-├── scripts/
-│   ├── novaseal_audit_surface.py
-│   ├── novaseal_btc_verifier_ipc_vectors.py
-│   ├── novaseal_btc_verifier_shell_report.py
-│   ├── novaseal_btc_verifier_vectors.py
-│   ├── novaseal_canonical_vectors.py
-│   ├── novaseal_fixture_harness.py
-│   ├── novaseal_parent_lock_abi_preflight.py
-│   ├── novaseal_riscv_shell_artifact.py
-│   ├── novaseal_schema_layout.py
-│   └── novaseal_spawn_backend_probe.py
+├── ../tools/src/                   # Rust evidence/vector/schema/ABI harnesses
 ├── harness/
 │   └── ckb_vm/                    # evidence-only CKB VM runners, not deployable contract code
 ├── verifier/
@@ -143,7 +133,10 @@ novaseal-v0-mvp-skeleton/
     └── invariant_matrix.json
 ```
 
-Repository-root NovaSeal evidence scripts such as `scripts/novaseal_wallet_signing_vectors.py` and `scripts/novaseal_bip340_tcb_review.py` are outside this package's `scripts/` directory. The production-prep/profile certification gate is now owned by the Rust compiler entry `cellc certify --plugin novaseal-profile-v0`.
+Repository-root NovaSeal evidence generators live in the Rust
+`cellscript-tools` crate. Package-local vector, schema, ABI, and fixture
+harnesses live in `proposals/novaseal/tools`. The production-prep/profile
+certification gate is owned by `cellc certify --plugin novaseal-profile-v0`.
 
 ---
 
@@ -240,41 +233,41 @@ cellc check --target-profile ckb
 cellc audit-bundle --target-profile ckb --json
 
 # 3. Extract NovaSeal-specific audit surface
-python3 scripts/novaseal_audit_surface.py --pretty
+cargo run --quiet --locked --manifest-path ../tools/Cargo.toml -- audit-surface --pretty
 
 # 4. Extract the current packed schema layout reference
-python3 scripts/novaseal_schema_layout.py --pretty
+cargo run --quiet --locked --manifest-path ../tools/Cargo.toml -- schema-layout --pretty
 
 # 5. Generate deterministic packed-reference fixture vectors
-python3 scripts/novaseal_canonical_vectors.py --pretty
+cargo run --quiet --locked --manifest-path ../tools/Cargo.toml -- canonical-vectors --pretty
 
 # 6. Generate reference BIP340 verifier vectors
-python3 scripts/novaseal_btc_verifier_vectors.py --pretty
+cargo run --quiet --locked --manifest-path ../tools/Cargo.toml -- btc-verifier-vectors --pretty
 
 # 7. Run the host reference verifier against all BIP340 vectors
 cargo run --manifest-path verifier/novaseal_btc_verifier/Cargo.toml -- verify-vectors --vectors target/novaseal-btc-verifier-vectors.json
 
 # 8. Generate and check the fixed verifier IPC envelope vectors
-python3 scripts/novaseal_btc_verifier_ipc_vectors.py --pretty
+cargo run --quiet --locked --manifest-path ../tools/Cargo.toml -- btc-verifier-ipc-vectors --pretty
 cargo check --manifest-path verifier/novaseal_btc_verifier_core/Cargo.toml --target riscv64imac-unknown-none-elf
 cargo run --manifest-path verifier/novaseal_btc_verifier/Cargo.toml -- verify-ipc-vectors --vectors target/novaseal-btc-verifier-ipc-vectors.json
 
 # 9. Build the no-std RISC-V BIP340 verifier shell
 cargo build --manifest-path verifier/novaseal_btc_verifier_riscv/Cargo.toml --target riscv64imac-unknown-none-elf --bin novaseal_btc_verifier_riscv
 cargo build --manifest-path verifier/novaseal_btc_verifier_riscv/Cargo.toml --release --target riscv64imac-unknown-none-elf --bin novaseal_btc_verifier_riscv
-python3 scripts/novaseal_btc_verifier_shell_report.py --pretty
+cargo run --quiet --locked --manifest-path ../tools/Cargo.toml -- btc-verifier-shell-report --pretty
 
 # 10. Stage and verify the exact RISC-V verifier shell artifact
-python3 scripts/novaseal_riscv_shell_artifact.py --sync --pretty
+cargo run --quiet --locked --manifest-path ../tools/Cargo.toml -- riscv-shell-artifact --sync --pretty
 
 # 11. Execute the staged child verifier ELF in ckb-vm with inherited-fd input
 cargo run --manifest-path harness/ckb_vm/Cargo.toml --bin novaseal_ckb_vm_harness -- --pretty
 
 # 12. Probe the current CellScript VM2 spawn backend boundary
-python3 scripts/novaseal_spawn_backend_probe.py --cellc /home/arthur/a19q3/CellScript/target/debug/cellc --pretty
+cargo run --quiet --locked --manifest-path ../tools/Cargo.toml -- spawn-backend-probe --cellc /home/arthur/a19q3/CellScript/target/debug/cellc --pretty
 
 # 13. Build and inspect the parent lock ASM/ELF ABI surface
-python3 scripts/novaseal_parent_lock_abi_preflight.py --pretty
+cargo run --quiet --locked --manifest-path ../tools/Cargo.toml -- parent-lock-abi-preflight --pretty
 
 # 14. Execute the parent lock ELF and staged child verifier ELF together in ckb-vm,
 #     plus official ckb-script resolved lock-group verification
@@ -288,32 +281,32 @@ cargo run --manifest-path harness/ckb_vm/Cargo.toml --bin novaseal_state_type_ha
 cargo run --manifest-path harness/ckb_vm/Cargo.toml --bin novaseal_combined_tx_harness -- --pretty
 
 # 17. Run the deterministic fixture harness (source-model plus attached evidence)
-python3 scripts/novaseal_fixture_harness.py --pretty
+cargo run --quiet --locked --manifest-path ../tools/Cargo.toml -- fixture-harness --pretty
 
 # 18. Generate fixed-width wallet signing vectors from the repository root
-python3 /home/arthur/a19q3/CellScript/scripts/novaseal_wallet_signing_vectors.py --pretty
+cargo run --quiet --locked --manifest-path ../../../Cargo.toml -p cellscript-tools --bin cellscript-tools -- --root ../../.. wallet-signing-vectors --pretty
 
 # 19. Generate wallet/lock digest alignment from this package
-python3 scripts/novaseal_wallet_signing_alignment.py --pretty
-python3 scripts/novaseal_fixture_harness.py --pretty
+cargo run --quiet --locked --manifest-path ../tools/Cargo.toml -- wallet-signing-alignment --pretty
+cargo run --quiet --locked --manifest-path ../tools/Cargo.toml -- fixture-harness --pretty
 
 # 20. Generate planned-profile operator fixtures from the repository root
-python3 /home/arthur/a19q3/CellScript/scripts/novaseal_profile_operator_fixtures.py --pretty
+cargo run --quiet --locked --manifest-path ../../../Cargo.toml -p cellscript-tools --bin cellscript-tools -- --root ../../.. profile-operator-fixtures --pretty
 
 # 21. Generate planned-profile service-builder fixtures from the repository root
-python3 /home/arthur/a19q3/CellScript/scripts/novaseal_service_builder_fixtures.py --pretty
+cargo run --quiet --locked --manifest-path ../../../Cargo.toml -p cellscript-tools --bin cellscript-tools -- --root ../../.. service-builder-fixtures --pretty
 
 # 22. Generate the local BIP340 TCB review bundle from the repository root
-python3 /home/arthur/a19q3/CellScript/scripts/novaseal_bip340_tcb_review.py --pretty
+cargo run --quiet --locked --manifest-path ../../../Cargo.toml -p cellscript-tools --bin cellscript-tools -- --root ../../.. bip340-tcb-review --pretty
 
 # 23. Generate the BTC SPV external-evidence adapter request from the repository root
-python3 /home/arthur/a19q3/CellScript/scripts/novaseal_btc_spv_evidence_adapter.py --pretty
+cargo run --quiet --locked --manifest-path ../../../Cargo.toml -p cellscript-tools --bin cellscript-tools -- --root ../../.. btc-spv-evidence-adapter --pretty
 
 # 24. Generate public CellDep and external TCB attestation adapter requests from the repository root
-python3 /home/arthur/a19q3/CellScript/scripts/novaseal_external_attestation_adapter.py --pretty
+cargo run --quiet --locked --manifest-path ../../../Cargo.toml -p cellscript-tools --bin cellscript-tools -- --root ../../.. external-attestation-adapter --pretty
 
 # 25. Generate the external evidence handoff bundle from the repository root
-python3 /home/arthur/a19q3/CellScript/scripts/novaseal_external_evidence_handoff_bundle.py --pretty
+cargo run --quiet --locked --manifest-path ../../../Cargo.toml -p cellscript-tools --bin cellscript-tools -- --root ../../.. external-evidence-handoff --pretty
 
 # 25. Run the local production-prep/profile certification gate from the repository root
 /home/arthur/a19q3/CellScript/target/debug/cellc certify --plugin novaseal-profile-v0 --json

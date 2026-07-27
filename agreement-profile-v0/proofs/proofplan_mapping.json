@@ -59,7 +59,7 @@
     {
       "claim": "Fixture semantics are executable.",
       "classification": "local-transaction-shape-covered + resolved-transaction-covered + live-devnet-covered",
-      "evidence": "python3 scripts/nova_agreement_tx_shape_harness.py --pretty matched 12/12 shape and arithmetic-boundary expectations; cargo run --manifest-path harness/ckb_vm/Cargo.toml --bin novaseal_agreement_tx_harness -- --pretty matched 20/20 script-layer and node-verifier expectations; scripts/novaseal_agreement_devnet_stateful_live.py passed originate -> repay, originate -> claim, and live negative dry-runs"
+      "evidence": "cargo run --quiet --locked --manifest-path ../tools/Cargo.toml -- agreement-tx-shape --pretty matched 12/12 shape and arithmetic-boundary expectations; cargo run --manifest-path harness/ckb_vm/Cargo.toml --bin novaseal_agreement_tx_harness -- --pretty matched 20/20 script-layer and node-verifier expectations; cellscript-tools novaseal-agreement-devnet passed originate -> repay, originate -> claim, and live negative dry-runs"
     },
     {
       "claim": "Native CKB funding/settlement shapes are locally verified.",

@@ -20,13 +20,13 @@ Package and script checks:
 - `cellc src/nova_state_lifecycle_type.cell --target-profile ckb --entry-action novaseal_lifecycle` passes.
 - `cellc src/nova_btc_authority_lock.cell --target-profile ckb` passes.
 - `cellc src/nova_receipt_type.cell --target-profile ckb` passes.
-- `python3 scripts/novaseal_wallet_signing_vectors.py --pretty` passes.
-- `python3 scripts/novaseal_bip340_tcb_review.py --pretty` passes local review gates and records that external attestation is still required.
+- `cellscript-tools wallet-signing-vectors --pretty` passes.
+- `cellscript-tools bip340-tcb-review --pretty` passes local review gates and records that external attestation is still required.
 - A current `target/debug/cellc certify --plugin novaseal-profile-v0 --repo-root . --json` run is locally acceptable when its generated reports are fresh for the exact git commit and its stateful acceptance report has `live_devnet_rpc_executed=true`, `local_blockers=0`, and either `status=passed` or `status=local_devnet_passed_external_endpoint_required`. The latter status is only a local acceptance pass; production/external completeness still requires `status=passed`, `acceptance_blockers=0`, and `blockers=0`.
 
 Live local devnet:
 
-- `scripts/novaseal_devnet_stateful_live.py` passes.
+- `cellscript-tools novaseal-core-devnet` passes.
 - It deploys the BIP340 runtime verifier as a live CellDep.
 - It deploys `novaseal_lifecycle` as a live VM2/data2 type-script CellDep.
 - It commits bootstrap -> key-auth transition by RPC.
@@ -64,7 +64,7 @@ After:
 
 ```bash
 cellc audit-bundle --target-profile ckb --json
-python3 scripts/novaseal_audit_surface.py --pretty
+cargo run --quiet --locked --manifest-path ../tools/Cargo.toml -- audit-surface --pretty
 ```
 
 the derived audit surface reports:
@@ -99,7 +99,7 @@ transition coverage are visible to generated ProofPlan strict mode.
 
 ## Schema And Vectors
 
-`python3 scripts/novaseal_schema_layout.py --pretty` reports:
+`cargo run --quiet --locked --manifest-path ../tools/Cargo.toml -- schema-layout --pretty` reports:
 
 ```text
 NovaSealCellV0: fields=7 size=146 bytes
@@ -110,7 +110,7 @@ ProofReceiptCommitmentV0: fields=13 size=310 bytes
 ProofReceiptV0: fields=16 size=382 bytes
 ```
 
-`python3 scripts/novaseal_canonical_vectors.py --pretty` reports:
+`cargo run --quiet --locked --manifest-path ../tools/Cargo.toml -- canonical-vectors --pretty` reports:
 
 ```text
 vectors=11

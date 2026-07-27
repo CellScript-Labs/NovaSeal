@@ -6,7 +6,7 @@ verifier_root="$(cd "$crate_dir/.." && pwd)"
 cargo_home_dir="${CARGO_HOME:-${HOME}/.cargo}"
 target_dir="${CARGO_TARGET_DIR:-$crate_dir/target}"
 
-for command in cargo python3 rustc; do
+for command in cargo rustc; do
     if ! command -v "$command" >/dev/null 2>&1; then
         printf 'required command not found: %s\n' "$command" >&2
         exit 1
@@ -51,22 +51,6 @@ else
 fi
 mv "$stripped_artifact" "$artifact"
 
-python3 - "$artifact" <<'PY'
-import hashlib
-import sys
-from pathlib import Path
-
-artifact = Path(sys.argv[1])
-payload = artifact.read_bytes()
-print(f"artifact={artifact}")
-print(f"size_bytes={len(payload)}")
-print(f"sha256={hashlib.sha256(payload).hexdigest()}")
-print(
-    "ckb_data_hash=0x"
-    + hashlib.blake2b(
-        payload,
-        digest_size=32,
-        person=b"ckb-default-hash",
-    ).hexdigest()
-)
-PY
+cargo run --quiet --locked \
+    --manifest-path "$verifier_root/../../tools/Cargo.toml" -- \
+    artifact-identity "$artifact"

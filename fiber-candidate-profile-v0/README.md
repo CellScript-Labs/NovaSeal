@@ -50,8 +50,8 @@ implementation only when the certification gate sees this manifest, source
 actions, lifecycle dispatcher, schemas, fixtures, docs, invariant matrix, live
 stateful report, and Fiber-node experiment report. The business scenario
 `fiber_candidate_path` is CKB-stateful evidence for the NovaSeal profile, while
-`scripts/novaseal_fiber_node_experiments.py` supplies the separate Fiber
-node/channel execution evidence. `scripts/novaseal_profile_operator_fixtures.py`
+`cellscript-tools fiber-node-experiments` supplies the separate Fiber
+node/channel execution evidence. `cellscript-tools profile-operator-fixtures`
 binds that profile evidence to a wallet/operator witness fixture, and
-`scripts/novaseal_service_builder_fixtures.py` binds it to a service
+`cellscript-tools service-builder-fixtures` binds it to a service
 request/response skeleton.

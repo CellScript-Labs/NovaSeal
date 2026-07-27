@@ -16,7 +16,7 @@ The current state and lock sources sign `hash_blake2b_packed(NovaSealSignedInten
 Run from `proposals/novaseal/v0-mvp-skeleton/` after schema and canonical vector generation:
 
 ```bash
-python3 scripts/novaseal_wallet_signing_alignment.py --pretty
+cargo run --quiet --locked --manifest-path ../tools/Cargo.toml -- wallet-signing-alignment --pretty
 ```
 
 This writes:
@@ -25,7 +25,7 @@ This writes:
 target/novaseal-wallet-signing-alignment.json
 ```
 
-`scripts/novaseal_fixture_harness.py --pretty` attaches the report when it exists.
+`../tools/src/fixture_harness.rs --pretty` attaches the report when it exists.
 
 ---
 

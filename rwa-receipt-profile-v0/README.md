@@ -50,7 +50,7 @@ actions, lifecycle dispatcher, schemas, fixtures, docs, invariant matrix, and
 live stateful evidence. The business scenario `rwa_receipt_lifecycle` now passes
 at the live devnet stateful layer, and profile-specific wallet/operator
 fixtures are generated and checked by
-`scripts/novaseal_profile_operator_fixtures.py`. Service request/response
+`cellscript-tools profile-operator-fixtures`. Service request/response
 fixtures are generated and checked by
-`scripts/novaseal_service_builder_fixtures.py`. Public/mainnet legal/registry
+`cellscript-tools service-builder-fixtures`. Public/mainnet legal/registry
 claims remain external until review evidence is generated and checked.

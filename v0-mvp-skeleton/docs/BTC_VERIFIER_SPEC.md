@@ -1,8 +1,8 @@
 # NovaSeal v0 BTC Verifier Spec
 
 **Date**: 2026-05-31
-**Vector generator**: `scripts/novaseal_btc_verifier_vectors.py`
-**IPC generator**: `scripts/novaseal_btc_verifier_ipc_vectors.py`
+**Vector generator**: `../tools/src/btc_vectors.rs`
+**IPC generator**: `../tools/src/ipc_vectors.rs`
 **Host verifier**: `verifier/novaseal_btc_verifier`
 **No-std IPC core**: `verifier/novaseal_btc_verifier_core`
 **RISC-V shell**: `verifier/novaseal_btc_verifier_riscv`
@@ -36,20 +36,20 @@ The message is already the packed-reference NovaSeal signed intent hash. The ver
 Run:
 
 ```bash
-python3 scripts/novaseal_schema_layout.py --pretty
-python3 scripts/novaseal_canonical_vectors.py --pretty
-python3 scripts/novaseal_btc_verifier_vectors.py --pretty
-python3 scripts/novaseal_btc_verifier_ipc_vectors.py --pretty
+cargo run --quiet --locked --manifest-path ../tools/Cargo.toml -- schema-layout --pretty
+cargo run --quiet --locked --manifest-path ../tools/Cargo.toml -- canonical-vectors --pretty
+cargo run --quiet --locked --manifest-path ../tools/Cargo.toml -- btc-verifier-vectors --pretty
+cargo run --quiet --locked --manifest-path ../tools/Cargo.toml -- btc-verifier-ipc-vectors --pretty
 cargo check --manifest-path verifier/novaseal_btc_verifier_core/Cargo.toml --target riscv64imac-unknown-none-elf
 cargo test --manifest-path verifier/novaseal_btc_verifier_core/Cargo.toml
 cargo test --manifest-path verifier/novaseal_btc_verifier/Cargo.toml
 cargo run --manifest-path verifier/novaseal_btc_verifier/Cargo.toml -- verify-vectors --vectors target/novaseal-btc-verifier-vectors.json
 cargo run --manifest-path verifier/novaseal_btc_verifier/Cargo.toml -- verify-ipc-vectors --vectors target/novaseal-btc-verifier-ipc-vectors.json
 cargo build --manifest-path verifier/novaseal_btc_verifier_riscv/Cargo.toml --target riscv64imac-unknown-none-elf --bin novaseal_btc_verifier_riscv
-python3 scripts/novaseal_btc_verifier_shell_report.py --pretty
+cargo run --quiet --locked --manifest-path ../tools/Cargo.toml -- btc-verifier-shell-report --pretty
 cargo run --manifest-path harness/ckb_vm/Cargo.toml --bin novaseal_ckb_vm_harness -- --pretty
 cargo run --manifest-path harness/ckb_vm/Cargo.toml --bin novaseal_parent_lock_harness -- --pretty
-python3 /home/arthur/a19q3/CellScript/scripts/novaseal_bip340_tcb_review.py --pretty
+cargo run --quiet --locked --manifest-path ../../../Cargo.toml -p cellscript-tools --bin cellscript-tools -- --root ../../.. bip340-tcb-review --pretty
 /home/arthur/a19q3/CellScript/target/debug/cellc certify --plugin novaseal-profile-v0 --json
 ```
 

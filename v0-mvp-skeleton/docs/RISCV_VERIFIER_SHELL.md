@@ -34,8 +34,8 @@ cargo clippy --manifest-path verifier/novaseal_btc_verifier_riscv/Cargo.toml --l
 cargo clippy --manifest-path verifier/novaseal_btc_verifier_riscv/Cargo.toml --target riscv64imac-unknown-none-elf --bin novaseal_btc_verifier_riscv -- -D warnings
 cargo build --manifest-path verifier/novaseal_btc_verifier_riscv/Cargo.toml --target riscv64imac-unknown-none-elf --bin novaseal_btc_verifier_riscv
 cargo build --manifest-path verifier/novaseal_btc_verifier_riscv/Cargo.toml --release --target riscv64imac-unknown-none-elf --bin novaseal_btc_verifier_riscv
-python3 scripts/novaseal_btc_verifier_shell_report.py --pretty
-python3 scripts/novaseal_riscv_shell_artifact.py --sync --pretty
+cargo run --quiet --locked --manifest-path ../tools/Cargo.toml -- btc-verifier-shell-report --pretty
+cargo run --quiet --locked --manifest-path ../tools/Cargo.toml -- riscv-shell-artifact --sync --pretty
 cargo run --manifest-path harness/ckb_vm/Cargo.toml --bin novaseal_ckb_vm_harness -- --pretty
 ```
 
@@ -61,7 +61,7 @@ child_vm_matched_expected=105
 child_vm_max_cycles=3467842
 ```
 
-The staged release ELF at `target/novaseal-btc-verifier-riscv-shell-release.elf` is now checked against the current release build by `scripts/novaseal_riscv_shell_artifact.py`. The preflight also confirms that the generated CellScript audit surface exposes the intended lock spawn/pipe/wait records.
+The staged release ELF at `target/novaseal-btc-verifier-riscv-shell-release.elf` is now checked against the current release build by `../tools/src/riscv_artifact.rs`. The preflight also confirms that the generated CellScript audit surface exposes the intended lock spawn/pipe/wait records.
 The same staged ELF is executed by `harness/ckb_vm` with harness-provided official VM2 inherited-fd, pipe-read, and close syscalls.
 
 ## Unsafe Boundary
