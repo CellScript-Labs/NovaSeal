@@ -2,7 +2,7 @@
 
 **Date**: 2026-05-31
 **Status**: split-intent v0 rule implemented in CellScript source and packed-reference vectors.
-**Applies to**: `src/nova_state_type.cell`, `scripts/novaseal_canonical_vectors.py`, and `target/novaseal-canonical-vectors.json`.
+**Applies to**: `src/nova_state_type.cell`, `../tools/src/canonical_vectors.rs`, and `target/novaseal-canonical-vectors.json`.
 
 NovaSeal v0 no longer uses the old "hash ProofReceiptV0 while excluding
 intent_hash" candidate. The current rule splits the signed intent from the
@@ -89,8 +89,8 @@ historical accumulator.
 Run from `proposals/novaseal/v0-mvp-skeleton`:
 
 ```bash
-python3 scripts/novaseal_schema_layout.py --pretty
-python3 scripts/novaseal_canonical_vectors.py --pretty
+cargo run --quiet --locked --manifest-path ../tools/Cargo.toml -- schema-layout --pretty
+cargo run --quiet --locked --manifest-path ../tools/Cargo.toml -- canonical-vectors --pretty
 ```
 
 Current summary:

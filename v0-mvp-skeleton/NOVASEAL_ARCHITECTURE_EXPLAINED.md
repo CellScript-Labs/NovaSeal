@@ -139,7 +139,7 @@ NovaSeal does not copy RGB's schema implementation. The current gate uses a smal
 
 ### Compiler Certification Module
 
-`--plugin novaseal-profile-v0` is the public selector for the certification policy. It does not mean that `cellc` shells out to a Python plugin or loads arbitrary external code. The current implementation is compiled into the CellScript CLI as `src/cli/novaseal_certification.rs`.
+`--plugin novaseal-profile-v0` is the public selector for the certification policy. It does not mean that `cellc` shells out to an interpreter plugin or loads arbitrary external code. The current implementation is compiled into the CellScript CLI as `src/cli/novaseal_certification.rs`.
 
 The certification module writes and verifies three report layers:
 
@@ -183,7 +183,7 @@ The certification gate cannot make `cellc` magically incorruptible; no serious a
 - wallet vectors, invariant matrix, live/devnet reports and verifier pins are checked,
 - the invariant matrix records authority binding and checked `u64` arithmetic as runtime obligations,
 - the summary report records the Rust implementation path and implementation hash,
-- the gate avoids external Python adapter execution for the production-prep decision.
+- the gate avoids external interpreter adapter execution for the production-prep decision.
 
 The remaining trust boundary is explicit: users still trust the `cellc` binary, the reviewed Rust certification module, and the evidence files being certified. That is a smaller and more reviewable surface than a manifest string plus an external script, but it is not a claim that compilers have become saints.
 

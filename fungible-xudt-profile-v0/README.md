@@ -46,6 +46,6 @@ actions, lifecycle dispatcher, schemas, fixtures, docs, invariant matrix, and
 live stateful evidence. The business scenario `fungible_xudt_value_flow` now
 passes at the live devnet stateful layer, and profile-specific wallet/operator
 fixtures are generated and checked by
-`scripts/novaseal_profile_operator_fixtures.py`. Service request/response
+`cellscript-tools profile-operator-fixtures`. Service request/response
 fixtures are generated and checked by
-`scripts/novaseal_service_builder_fixtures.py`.
+`cellscript-tools service-builder-fixtures`.

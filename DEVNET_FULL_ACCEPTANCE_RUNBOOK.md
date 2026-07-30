@@ -86,7 +86,7 @@ external production attestations listed in Section 9.
 | Fiber node | `develop` branch, commit `3bbf5ea0ed7d` | 16-suite Fiber e2e | `git clone https://github.com/nervosnetwork/fiber.git` at sibling dir |
 | LND | `v0.20.1-beta`, built with `invoicesrpc routerrpc` | Cross-chain hub suites | `go install -tags=\"invoicesrpc routerrpc\"` in lnd checkout |
 | Bruno CLI | `@usebruno/cli` via npm | Fiber e2e runner | `npm install` inside fiber/tests/bruno |
-| Python | 3.10+ | All scripts | System python3 |
+| Rust | 1.97.1 | Compiler and evidence tools | `rust-toolchain.toml` |
 | Rust toolchain | stable + nightly for clippy | Build cellscript | rustup |
 | Go | 1.22+ | Build LND | System go |
 
@@ -96,7 +96,7 @@ and Go bin dir must all be on `$PATH` before running scripts.
 Useful preflight:
 
 ```bash
-command -v python3 cargo npm ckb ckb-cli
+command -v cargo npm ckb ckb-cli
 command -v lnd lncli
 git -C /path/to/fiber rev-parse HEAD
 git -C /path/to/fiber status --short --branch
@@ -122,7 +122,7 @@ The Rust certification reducer (`src/cli/novaseal_certification.rs`) enforces
 both **content-addressed provenance** and **git-commit matching**. A report is
 fresh only when:
 
-1. The SHA-256 of the tracked source files (.cell, .schema, .toml, .py, .rs)
+1. The SHA-256 of the tracked source files (.cell, .schema, .toml, .rs)
    matches the `source_tree.sha256` recorded in the report.
 2. The SHA-256 of each tracked artifact (verifier ELF, lifecycle ELF) matches
    the `artifacts.*.sha256` recorded in the report.
@@ -146,12 +146,13 @@ them fresh.
 
 ```bash
 cargo build --locked -p cellscript --all-targets
+CELL_TOOLS=(cargo run --quiet --locked -p cellscript-tools --bin cellscript-tools -- --root .)
 ```
 
 ### Phase 2: Core Live Devnet
 
 ```bash
-python3 scripts/novaseal_devnet_stateful_live.py \
+"${CELL_TOOLS[@]}" novaseal-core-devnet \
   --ckb-repo /path/to/ckb \
   --ckb-bin /path/to/ckb/target/debug/ckb \
   --pretty
@@ -164,7 +165,7 @@ Doc: `proposals/novaseal/v0-mvp-skeleton/docs/DEVNET_STATEFUL_ACCEPTANCE.md`
 ### Phase 3: Agreement Live Devnet
 
 ```bash
-python3 scripts/novaseal_agreement_devnet_stateful_live.py \
+"${CELL_TOOLS[@]}" novaseal-agreement-devnet \
   --ckb-repo /path/to/ckb \
   --ckb-bin /path/to/ckb/target/debug/ckb \
   --pretty
@@ -181,7 +182,7 @@ One command per profile. Each starts its own CKB devnet node.
 ```bash
 for profile in fungible-xudt rwa-receipt btc-transaction-commitment \
                btc-utxo-seal dual-seal fiber-candidate; do
-  python3 scripts/novaseal_planned_profiles_devnet_stateful_live.py \
+  "${CELL_TOOLS[@]}" novaseal-planned-devnet \
     --ckb-repo /path/to/ckb \
     --ckb-bin /path/to/ckb/target/debug/ckb \
     --profile "$profile" \
@@ -222,7 +223,7 @@ for suite in invoice-ops open-use-close-a-channel 3-nodes-transfer \
              watchtower/force-close-with-pending-tlcs \
              watchtower/force-close-with-pending-tlcs-and-udt \
              watchtower/force-close-preimage-multiple; do
-  REMOVE_OLD_STATE=y python3 scripts/novaseal_fiber_node_experiments.py \
+  REMOVE_OLD_STATE=y "${CELL_TOOLS[@]}" fiber-node-experiments \
     --fiber-repo "$FIBER_REPO" \
     --run-suite "$suite" \
     --timeout-seconds 1800 \
@@ -231,7 +232,7 @@ done
 
 # Cross-chain hub suites need LND (longer timeout)
 for suite in cross-chain-hub cross-chain-hub-separate; do
-  REMOVE_OLD_STATE=y python3 scripts/novaseal_fiber_node_experiments.py \
+  REMOVE_OLD_STATE=y "${CELL_TOOLS[@]}" fiber-node-experiments \
     --fiber-repo "$FIBER_REPO" \
     --run-suite "$suite" \
     --timeout-seconds 2400 \
@@ -280,42 +281,43 @@ go install -tags="invoicesrpc routerrpc" ./cmd/lnd ./cmd/lncli
 
 ### Phase 6: Fixture and Report Generation
 
-These scripts are pure computation (no external services). Run in order:
+These Rust tools are pure computation (no external services). Run in order:
 
 ```bash
 # BIP340 TCB review
-python3 scripts/novaseal_bip340_tcb_review.py --pretty
+"${CELL_TOOLS[@]}" bip340-tcb-review --pretty
 
 # Canonical packed-reference vectors
 (
-  cd proposals/novaseal/v0-mvp-skeleton
-  python3 scripts/novaseal_canonical_vectors.py --pretty
+  cargo run --quiet --locked --manifest-path proposals/novaseal/tools/Cargo.toml -- \
+    canonical-vectors --pretty
 )
 
 # Wallet signing vectors
-python3 scripts/novaseal_wallet_signing_vectors.py --pretty
+"${CELL_TOOLS[@]}" wallet-signing-vectors --pretty
 
 # Wallet/lock digest alignment
 (
-  cd proposals/novaseal/v0-mvp-skeleton
-  python3 scripts/novaseal_wallet_signing_alignment.py --pretty
-  python3 scripts/novaseal_fixture_harness.py --pretty
+  cargo run --quiet --locked --manifest-path proposals/novaseal/tools/Cargo.toml -- \
+    wallet-signing-alignment --pretty
+  cargo run --quiet --locked --manifest-path proposals/novaseal/tools/Cargo.toml -- \
+    fixture-harness --pretty
 )
 
 # Profile operator fixtures (depends on live reports)
-python3 scripts/novaseal_profile_operator_fixtures.py --pretty
+"${CELL_TOOLS[@]}" profile-operator-fixtures --pretty
 
 # Service builder fixtures (depends on operator fixtures)
-python3 scripts/novaseal_service_builder_fixtures.py --pretty
+"${CELL_TOOLS[@]}" service-builder-fixtures --pretty
 
 # BTC SPV evidence adapter
-python3 scripts/novaseal_btc_spv_evidence_adapter.py --pretty
+"${CELL_TOOLS[@]}" btc-spv-evidence-adapter --pretty
 
 # External attestation adapter
-python3 scripts/novaseal_external_attestation_adapter.py --pretty
+"${CELL_TOOLS[@]}" external-attestation-adapter --pretty
 
 # External evidence handoff bundle (depends on both adapters)
-python3 scripts/novaseal_external_evidence_handoff_bundle.py --pretty
+"${CELL_TOOLS[@]}" external-evidence-handoff --pretty
 ```
 
 Expected refreshed statuses:
@@ -428,7 +430,7 @@ Adapter request: `target/novaseal-btc-spv-evidence-adapter.json`
 | `public_btc_anchor_shape_matches_profile: false` or `expected_dual_sealed_utxo_fields_present: false` | BTC-facing live report is older than the sealed-UTXO handoff contract | Re-run the affected BTC-facing live profile, especially `dual-seal`, then re-run phase 6 |
 | Bruno suite timeout | Fiber node slow start | Increase `--timeout-seconds`; check port availability |
 | `unknown service invoicesrpc.Invoices` | LND built without `invoicesrpc routerrpc` | Rebuild LND with those tags |
-| Bruno QuickJS `BigInt` or stream-runtime mismatch | External Fiber Bruno collection expects Node runtime details that Bruno's runner does not expose identically | Let `scripts/novaseal_fiber_node_experiments.py` patch the copied per-suite worktree; do not patch the external Fiber checkout |
+| Bruno QuickJS `BigInt` or stream-runtime mismatch | External Fiber Bruno collection expects Node runtime details that Bruno's runner does not expose identically | Let `cellscript-tools fiber-node-experiments` patch the copied per-suite worktree; do not patch the external Fiber checkout |
 | Early CCH WebSocket `connection refused` logs | Separate CCH service starts before Fiber node WebSocket is ready | Treat as startup retry noise if the Bruno suite and JSON report pass |
 | Duplicate watchtower settlement transaction log | Watchtower retry observes an already-submitted transaction in the pool | Treat as retry noise if the suite assertions and JSON report pass |
 | `cellc certify` shows `failed` | Any upstream gate failed | Read `target/novaseal-production-gates.json` for specific failed gates |

@@ -34,8 +34,8 @@ cargo clippy --manifest-path verifier/novaseal_btc_verifier_riscv/Cargo.toml --l
 cargo clippy --manifest-path verifier/novaseal_btc_verifier_riscv/Cargo.toml --target riscv64imac-unknown-none-elf --bin novaseal_btc_verifier_riscv -- -D warnings
 cargo build --manifest-path verifier/novaseal_btc_verifier_riscv/Cargo.toml --target riscv64imac-unknown-none-elf --bin novaseal_btc_verifier_riscv
 cargo build --manifest-path verifier/novaseal_btc_verifier_riscv/Cargo.toml --release --target riscv64imac-unknown-none-elf --bin novaseal_btc_verifier_riscv
-python3 scripts/novaseal_btc_verifier_shell_report.py --pretty
-python3 scripts/novaseal_riscv_shell_artifact.py --sync --pretty
+cargo run --quiet --locked --manifest-path ../tools/Cargo.toml -- btc-verifier-shell-report --pretty
+cargo run --quiet --locked --manifest-path ../tools/Cargo.toml -- riscv-shell-artifact --sync --pretty
 cargo run --manifest-path harness/ckb_vm/Cargo.toml --bin novaseal_ckb_vm_harness -- --pretty
 ```
 
@@ -45,7 +45,7 @@ Current summary:
 core_unit_tests=7
 shell_lib_unit_tests=7
 riscv_binary_build=passed
-riscv_release_elf_size_bytes=187816
+riscv_release_elf_size_bytes=100912
 shell_vectors_total=105
 parse_ok=99
 parse_rejected=6
@@ -55,13 +55,13 @@ accepted=44
 rejected=61
 matched_expected=105
 all_expected_matched=true
-staged_release_elf_sha256=54f26ee955ab3ecbbacc3f5eef20ad3ffee9125c14241e8ea44b382618af2391
+staged_release_elf_sha256=be66f22507b734c8a432c4c85f0079cc7461caaa92ee3277d50ea8f62ce95ff7
 child_vm_executed=true
 child_vm_matched_expected=105
-child_vm_max_cycles=3487544
+child_vm_max_cycles=3467842
 ```
 
-The staged release ELF at `target/novaseal-btc-verifier-riscv-shell-release.elf` is now checked against the current release build by `scripts/novaseal_riscv_shell_artifact.py`. The preflight also confirms that the generated CellScript audit surface exposes the intended lock spawn/pipe/wait records.
+The staged release ELF at `target/novaseal-btc-verifier-riscv-shell-release.elf` is now checked against the current release build by `../tools/src/riscv_artifact.rs`. The preflight also confirms that the generated CellScript audit surface exposes the intended lock spawn/pipe/wait records.
 The same staged ELF is executed by `harness/ckb_vm` with harness-provided official VM2 inherited-fd, pipe-read, and close syscalls.
 
 ## Unsafe Boundary

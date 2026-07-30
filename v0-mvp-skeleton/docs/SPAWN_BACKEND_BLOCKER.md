@@ -11,7 +11,7 @@ This is no longer the parent/child VM execution blocker. A source-level verifier
 Run from the package root, using the local compiler build:
 
 ```bash
-python3 scripts/novaseal_spawn_backend_probe.py --cellc /home/arthur/a19q3/CellScript/target/debug/cellc --pretty
+cargo run --quiet --locked --manifest-path ../tools/Cargo.toml -- spawn-backend-probe --cellc /home/arthur/a19q3/CellScript/target/debug/cellc --pretty
 ```
 
 Current summary:

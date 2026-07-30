@@ -12,7 +12,7 @@ This document records the exact verifier shell artifact that the current lock wi
 Run from the package root:
 
 ```bash
-python3 scripts/novaseal_riscv_shell_artifact.py --sync --pretty
+cargo run --quiet --locked --manifest-path ../tools/Cargo.toml -- riscv-shell-artifact --sync --pretty
 ```
 
 Current summary:
@@ -20,8 +20,8 @@ Current summary:
 ```text
 preflight_passed=true
 staged_matches_release=true
-staged_release_elf_size_bytes=187816
-staged_release_elf_sha256=54f26ee955ab3ecbbacc3f5eef20ad3ffee9125c14241e8ea44b382618af2391
+staged_release_elf_size_bytes=100912
+staged_release_elf_sha256=be66f22507b734c8a432c4c85f0079cc7461caaa92ee3277d50ea8f62ce95ff7
 generated_spawn_visible=true
 lock_wiring_status=wired_to_bip340_shell
 ready_for_ckb_vm_dry_run=true

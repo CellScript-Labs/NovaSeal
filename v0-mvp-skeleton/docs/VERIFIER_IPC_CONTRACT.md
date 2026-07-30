@@ -1,7 +1,7 @@
 # NovaSeal v0 Verifier IPC Contract
 
 **Date**: 2026-05-31
-**Generator**: `scripts/novaseal_btc_verifier_ipc_vectors.py`
+**Generator**: `../tools/src/ipc_vectors.rs`
 **No-std core**: `verifier/novaseal_btc_verifier_core`
 **RISC-V shell**: `verifier/novaseal_btc_verifier_riscv`
 **Report**: `target/novaseal-btc-verifier-ipc-vectors.json`
@@ -49,13 +49,13 @@ The host CLI still prints JSON for local automation.
 Run:
 
 ```bash
-python3 scripts/novaseal_btc_verifier_vectors.py --pretty
-python3 scripts/novaseal_btc_verifier_ipc_vectors.py --pretty
+cargo run --quiet --locked --manifest-path ../tools/Cargo.toml -- btc-verifier-vectors --pretty
+cargo run --quiet --locked --manifest-path ../tools/Cargo.toml -- btc-verifier-ipc-vectors --pretty
 cargo check --manifest-path verifier/novaseal_btc_verifier_core/Cargo.toml --target riscv64imac-unknown-none-elf
 cargo test --manifest-path verifier/novaseal_btc_verifier_core/Cargo.toml
 cargo run --manifest-path verifier/novaseal_btc_verifier/Cargo.toml -- verify-ipc-vectors --vectors target/novaseal-btc-verifier-ipc-vectors.json
 cargo build --manifest-path verifier/novaseal_btc_verifier_riscv/Cargo.toml --target riscv64imac-unknown-none-elf --bin novaseal_btc_verifier_riscv
-python3 scripts/novaseal_btc_verifier_shell_report.py --pretty
+cargo run --quiet --locked --manifest-path ../tools/Cargo.toml -- btc-verifier-shell-report --pretty
 cargo run --manifest-path harness/ckb_vm/Cargo.toml --bin novaseal_ckb_vm_harness -- --pretty
 cargo run --manifest-path harness/ckb_vm/Cargo.toml --bin novaseal_parent_lock_harness -- --pretty
 ```

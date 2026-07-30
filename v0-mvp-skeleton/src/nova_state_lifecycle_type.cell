@@ -174,8 +174,8 @@ action novaseal_lifecycle(
         require header.old_state_hash == old_cell.state_hash
         require header.policy_hash == old_cell.policy_hash
         require ckb::cell_data_u64_le(source::input(0), 130) < U64_MAX
-        require ckb::cell_data_u64_le(source::output(0), 130) > ckb::cell_data_u64_le(source::input(0), 130)
-        // require pubkey == old_cell.btc_authority_hash.0
+        require ckb::cell_data_u64_le(source::output(0), 130) == ckb::cell_data_u64_le(source::input(0), 130) + 1
+        require pubkey == old_cell.btc_authority_hash.0
 
         verifier::btc::bip340::require_signature(state_hash_commitment, pubkey, signature)
     }

@@ -53,10 +53,12 @@ NovaSeal is cleaner as a typed contract and certification framework. Its strengt
    - Keep manifests and validators pinned to the dispatcher action names and live report paths.
    - This prevents future profiles from passing package validation while lacking a CKB-creatable first-state path.
 
-4. Split live-runner helper modules.
-   - `novaseal_planned_profiles_devnet_stateful_live.py` is now large because every profile packs its own ABI.
-   - Move each profile into `scripts/novaseal_live_profiles/<profile>.py`.
-   - Keep a shared transaction/devnet/provenance module and a registry that preserves report contracts.
+4. Keep the split Rust live-runner modules closed under profile additions.
+   - Each profile owns its ABI in `crates/cellscript-tools/src/novaseal_planned_*.rs`.
+   - Shared transaction/devnet/provenance logic remains in
+     `novaseal_planned_live.rs` and `ckb_devnet.rs`.
+   - New profiles must preserve the established report contracts and register
+     through the shared dispatcher.
 
 5. Promote service-builder fixtures into reusable wallet and service libraries.
    - RGB++ has SDK builders for virtual CKB tx, BTC commitment, service queue, paymaster, and SPV proof retrieval.

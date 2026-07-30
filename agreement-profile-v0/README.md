@@ -116,14 +116,14 @@ They are not a general payout-recipient schema: payout routing is committed by
 /home/arthur/a19q3/CellScript/target/debug/cellc audit-bundle --target-profile ckb --json
 /home/arthur/a19q3/CellScript/target/debug/cellc explain-assumptions --target-profile ckb
 /home/arthur/a19q3/CellScript/target/debug/cellc check --target-profile ckb --primitive-strict 0.16
-python3 scripts/nova_agreement_tx_shape_harness.py --pretty
+cargo run --quiet --locked --manifest-path ../tools/Cargo.toml -- agreement-tx-shape --pretty
 /home/arthur/a19q3/CellScript/target/debug/cellc src/nova_agreement_type.cell --target riscv64-elf --target-profile ckb --entry-action originate_agreement -o target/nova-agreement-originate-action.elf
 /home/arthur/a19q3/CellScript/target/debug/cellc src/nova_agreement_type.cell --target riscv64-elf --target-profile ckb --entry-action repay_before_expiry -o target/nova-agreement-repay-action.elf
 /home/arthur/a19q3/CellScript/target/debug/cellc src/nova_agreement_type.cell --target riscv64-elf --target-profile ckb --entry-action claim_after_expiry -o target/nova-agreement-claim-action.elf
 /home/arthur/a19q3/CellScript/target/debug/cellc src/nova_agreement_lifecycle_type.cell --target riscv64-elf --target-profile ckb --entry-action nova_agreement_lifecycle -o target/nova-agreement-lifecycle-type.elf
 /home/arthur/a19q3/CellScript/target/debug/cellc harness/ckb_vm/always_success_lock.cell --target riscv64-elf --target-profile ckb --entry-lock always_success -o target/nova-agreement-always-success-lock.elf
 cargo run --manifest-path harness/ckb_vm/Cargo.toml --bin novaseal_agreement_tx_harness -- --pretty
-python3 /home/arthur/a19q3/CellScript/scripts/novaseal_wallet_signing_vectors.py --pretty
+cargo run --quiet --locked --manifest-path ../../../Cargo.toml -p cellscript-tools --bin cellscript-tools -- wallet-signing-vectors --pretty
 /home/arthur/a19q3/CellScript/target/debug/cellc certify --plugin novaseal-profile-v0 --json
 /home/arthur/a19q3/CellScript/scripts/novaseal_devnet_stateful_acceptance.sh --pretty --report-only
 ```
@@ -149,7 +149,7 @@ receipt outputs are live. The current aggregate status is `passed`. See
 
 ## Harness Boundary
 
-`scripts/nova_agreement_tx_shape_harness.py` checks builder-visible CKB output
+`../tools/src/agreement_shape.rs` checks builder-visible CKB output
 amount, occupied-capacity shapes, and local terminal-arithmetic boundary cases
 for repayment amount and nonce increment overflow.
 

@@ -1,7 +1,7 @@
 # NovaSeal v0 Fixture Harness
 
 **Date**: 2026-05-31
-**Harness**: `scripts/novaseal_fixture_harness.py`
+**Harness**: `../tools/src/fixture_harness.rs`
 **Report**: `target/novaseal-fixture-report.json`
 **Classification**: model-level fixture evidence.
 
@@ -59,16 +59,16 @@ Run:
 
 ```bash
 cellc audit-bundle --target-profile ckb --json
-python3 scripts/novaseal_audit_surface.py --pretty
-python3 scripts/novaseal_schema_layout.py --pretty
-python3 scripts/novaseal_canonical_vectors.py --pretty
-python3 scripts/novaseal_btc_verifier_vectors.py --pretty
-python3 scripts/novaseal_btc_verifier_ipc_vectors.py --pretty
-python3 scripts/novaseal_btc_verifier_shell_report.py --pretty
+cargo run --quiet --locked --manifest-path ../tools/Cargo.toml -- audit-surface --pretty
+cargo run --quiet --locked --manifest-path ../tools/Cargo.toml -- schema-layout --pretty
+cargo run --quiet --locked --manifest-path ../tools/Cargo.toml -- canonical-vectors --pretty
+cargo run --quiet --locked --manifest-path ../tools/Cargo.toml -- btc-verifier-vectors --pretty
+cargo run --quiet --locked --manifest-path ../tools/Cargo.toml -- btc-verifier-ipc-vectors --pretty
+cargo run --quiet --locked --manifest-path ../tools/Cargo.toml -- btc-verifier-shell-report --pretty
 cargo run --manifest-path harness/ckb_vm/Cargo.toml --bin novaseal_ckb_vm_harness -- --pretty
-python3 scripts/novaseal_parent_lock_abi_preflight.py --pretty
+cargo run --quiet --locked --manifest-path ../tools/Cargo.toml -- parent-lock-abi-preflight --pretty
 cargo run --manifest-path harness/ckb_vm/Cargo.toml --bin novaseal_parent_lock_harness -- --pretty
-python3 scripts/novaseal_fixture_harness.py --pretty
+cargo run --quiet --locked --manifest-path ../tools/Cargo.toml -- fixture-harness --pretty
 ```
 
 Current summary:
@@ -107,7 +107,7 @@ combined_fee_shape_checks_passed=true
 combined_under_capacity_shape_rejects=true
 combined_min_fee_shannons=100000
 combined_max_fee_shannons=100000
-combined_full_transaction_max_cycles=7521003
+combined_full_transaction_max_cycles=7565341
 combined_max_consensus_tx_size_bytes=1484
 combined_max_output_occupied_capacity_shannons=70700000000
 parent_lock_max_consensus_tx_size_bytes=859

@@ -10,7 +10,7 @@
 
 ## Live Execution Evidence
 
-`scripts/novaseal_fiber_node_experiments.py` generated
+`cellscript-tools fiber-node-experiments` generated
 `target/novaseal-fiber-node-experiments.json` with:
 
 - status: `passed`
@@ -54,7 +54,7 @@ for suite in invoice-ops open-use-close-a-channel 3-nodes-transfer \
              watchtower/force-close-with-pending-tlcs \
              watchtower/force-close-with-pending-tlcs-and-udt \
              watchtower/force-close-preimage-multiple; do
-  python3 scripts/novaseal_fiber_node_experiments.py \
+  cargo run --quiet --locked -p cellscript-tools --bin cellscript-tools -- --root . fiber-node-experiments \
     --fiber-repo "$FIBER_REPO" \
     --run-suite "$suite" \
     --timeout-seconds 1800 \
@@ -62,7 +62,7 @@ for suite in invoice-ops open-use-close-a-channel 3-nodes-transfer \
 done
 
 for suite in cross-chain-hub cross-chain-hub-separate; do
-  python3 scripts/novaseal_fiber_node_experiments.py \
+  cargo run --quiet --locked -p cellscript-tools --bin cellscript-tools -- --root . fiber-node-experiments \
     --fiber-repo "$FIBER_REPO" \
     --run-suite "$suite" \
     --timeout-seconds 2400 \
@@ -77,67 +77,67 @@ timeout traceability:
 ```bash
 PATH="/Users/arthur/RustroverProjects/ckb/target/debug:/Users/arthur/RustroverProjects/ckb-cli/target/debug:$PATH" \
 REMOVE_OLD_STATE=y \
-python3 scripts/novaseal_fiber_node_experiments.py --pretty --run-suite invoice-ops --timeout-seconds 1800
+cargo run --quiet --locked -p cellscript-tools --bin cellscript-tools -- --root . fiber-node-experiments --pretty --run-suite invoice-ops --timeout-seconds 1800
 
 PATH="/Users/arthur/RustroverProjects/ckb/target/debug:/Users/arthur/RustroverProjects/ckb-cli/target/debug:$PATH" \
 REMOVE_OLD_STATE=y \
-python3 scripts/novaseal_fiber_node_experiments.py --pretty --run-suite open-use-close-a-channel --timeout-seconds 1800
+cargo run --quiet --locked -p cellscript-tools --bin cellscript-tools -- --root . fiber-node-experiments --pretty --run-suite open-use-close-a-channel --timeout-seconds 1800
 
 PATH="/Users/arthur/RustroverProjects/ckb/target/debug:/Users/arthur/RustroverProjects/ckb-cli/target/debug:$PATH" \
 REMOVE_OLD_STATE=y \
-python3 scripts/novaseal_fiber_node_experiments.py --pretty --run-suite 3-nodes-transfer --timeout-seconds 1800
+cargo run --quiet --locked -p cellscript-tools --bin cellscript-tools -- --root . fiber-node-experiments --pretty --run-suite 3-nodes-transfer --timeout-seconds 1800
 
 PATH="/Users/arthur/RustroverProjects/ckb/target/debug:/Users/arthur/RustroverProjects/ckb-cli/target/debug:$PATH" \
 REMOVE_OLD_STATE=y \
-python3 scripts/novaseal_fiber_node_experiments.py --pretty --run-suite router-pay --timeout-seconds 1800
+cargo run --quiet --locked -p cellscript-tools --bin cellscript-tools -- --root . fiber-node-experiments --pretty --run-suite router-pay --timeout-seconds 1800
 
 PATH="/Users/arthur/RustroverProjects/ckb/target/debug:/Users/arthur/RustroverProjects/ckb-cli/target/debug:$PATH" \
 REMOVE_OLD_STATE=y \
-python3 scripts/novaseal_fiber_node_experiments.py --pretty --run-suite shutdown-force --timeout-seconds 1800
+cargo run --quiet --locked -p cellscript-tools --bin cellscript-tools -- --root . fiber-node-experiments --pretty --run-suite shutdown-force --timeout-seconds 1800
 
 PATH="/Users/arthur/RustroverProjects/ckb/target/debug:/Users/arthur/RustroverProjects/ckb-cli/target/debug:$PATH" \
 REMOVE_OLD_STATE=y \
-python3 scripts/novaseal_fiber_node_experiments.py --pretty --run-suite reestablish --timeout-seconds 1800
+cargo run --quiet --locked -p cellscript-tools --bin cellscript-tools -- --root . fiber-node-experiments --pretty --run-suite reestablish --timeout-seconds 1800
 
 PATH="/Users/arthur/RustroverProjects/ckb/target/debug:/Users/arthur/RustroverProjects/ckb-cli/target/debug:$PATH" \
 REMOVE_OLD_STATE=y \
-python3 scripts/novaseal_fiber_node_experiments.py --pretty --run-suite external-funding-open --timeout-seconds 1800
+cargo run --quiet --locked -p cellscript-tools --bin cellscript-tools -- --root . fiber-node-experiments --pretty --run-suite external-funding-open --timeout-seconds 1800
 
 PATH="/Users/arthur/RustroverProjects/ckb/target/debug:/Users/arthur/RustroverProjects/ckb-cli/target/debug:$PATH" \
 REMOVE_OLD_STATE=y \
-python3 scripts/novaseal_fiber_node_experiments.py --pretty --run-suite funding-tx-verification --timeout-seconds 1800
+cargo run --quiet --locked -p cellscript-tools --bin cellscript-tools -- --root . fiber-node-experiments --pretty --run-suite funding-tx-verification --timeout-seconds 1800
 
 PATH="/Users/arthur/RustroverProjects/ckb/target/debug:/Users/arthur/RustroverProjects/ckb-cli/target/debug:$PATH" \
 REMOVE_OLD_STATE=y \
-python3 scripts/novaseal_fiber_node_experiments.py --pretty --run-suite udt --timeout-seconds 1800
+cargo run --quiet --locked -p cellscript-tools --bin cellscript-tools -- --root . fiber-node-experiments --pretty --run-suite udt --timeout-seconds 1800
 
 PATH="/Users/arthur/RustroverProjects/ckb/target/debug:/Users/arthur/RustroverProjects/ckb-cli/target/debug:$PATH" \
 REMOVE_OLD_STATE=y \
-python3 scripts/novaseal_fiber_node_experiments.py --pretty --run-suite udt-router-pay --timeout-seconds 1800
+cargo run --quiet --locked -p cellscript-tools --bin cellscript-tools -- --root . fiber-node-experiments --pretty --run-suite udt-router-pay --timeout-seconds 1800
 
 PATH="/Users/arthur/RustroverProjects/ckb/target/debug:/Users/arthur/RustroverProjects/ckb-cli/target/debug:$PATH" \
 REMOVE_OLD_STATE=y \
-python3 scripts/novaseal_fiber_node_experiments.py --pretty --run-suite watchtower/force-close-after-open-channel --timeout-seconds 1800
+cargo run --quiet --locked -p cellscript-tools --bin cellscript-tools -- --root . fiber-node-experiments --pretty --run-suite watchtower/force-close-after-open-channel --timeout-seconds 1800
 
 PATH="/Users/arthur/RustroverProjects/ckb/target/debug:/Users/arthur/RustroverProjects/ckb-cli/target/debug:$PATH" \
 REMOVE_OLD_STATE=y \
-python3 scripts/novaseal_fiber_node_experiments.py --pretty --run-suite watchtower/force-close-with-pending-tlcs --timeout-seconds 1800
+cargo run --quiet --locked -p cellscript-tools --bin cellscript-tools -- --root . fiber-node-experiments --pretty --run-suite watchtower/force-close-with-pending-tlcs --timeout-seconds 1800
 
 PATH="/Users/arthur/RustroverProjects/ckb/target/debug:/Users/arthur/RustroverProjects/ckb-cli/target/debug:$PATH" \
 REMOVE_OLD_STATE=y \
-python3 scripts/novaseal_fiber_node_experiments.py --pretty --run-suite watchtower/force-close-with-pending-tlcs-and-udt --timeout-seconds 1800
+cargo run --quiet --locked -p cellscript-tools --bin cellscript-tools -- --root . fiber-node-experiments --pretty --run-suite watchtower/force-close-with-pending-tlcs-and-udt --timeout-seconds 1800
 
 PATH="/Users/arthur/RustroverProjects/ckb/target/debug:/Users/arthur/RustroverProjects/ckb-cli/target/debug:$PATH" \
 REMOVE_OLD_STATE=y \
-python3 scripts/novaseal_fiber_node_experiments.py --pretty --run-suite watchtower/force-close-preimage-multiple --timeout-seconds 1800
+cargo run --quiet --locked -p cellscript-tools --bin cellscript-tools -- --root . fiber-node-experiments --pretty --run-suite watchtower/force-close-preimage-multiple --timeout-seconds 1800
 
 PATH="/Users/arthur/go/bin:/Users/arthur/RustroverProjects/ckb/target/debug:/Users/arthur/RustroverProjects/ckb-cli/target/debug:$PATH" \
 REMOVE_OLD_STATE=y \
-python3 scripts/novaseal_fiber_node_experiments.py --pretty --run-suite cross-chain-hub --timeout-seconds 2400
+cargo run --quiet --locked -p cellscript-tools --bin cellscript-tools -- --root . fiber-node-experiments --pretty --run-suite cross-chain-hub --timeout-seconds 2400
 
 PATH="/Users/arthur/go/bin:/Users/arthur/RustroverProjects/ckb/target/debug:/Users/arthur/RustroverProjects/ckb-cli/target/debug:$PATH" \
 REMOVE_OLD_STATE=y \
-python3 scripts/novaseal_fiber_node_experiments.py --pretty --run-suite cross-chain-hub-separate --timeout-seconds 2400
+cargo run --quiet --locked -p cellscript-tools --bin cellscript-tools -- --root . fiber-node-experiments --pretty --run-suite cross-chain-hub-separate --timeout-seconds 2400
 ```
 
 Each run started a local CKB dev chain, built or reused Fiber `fnn`, started

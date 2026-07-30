@@ -34,15 +34,15 @@ accepted=44
 rejected=61
 matched_expected=105
 mismatched=0
-max_cycles=3487544
+max_cycles=3467842
 ```
 
 The staged ELF used by this run is:
 
 ```text
 target/novaseal-btc-verifier-riscv-shell-release.elf
-size_bytes=187816
-sha256=54f26ee955ab3ecbbacc3f5eef20ad3ffee9125c14241e8ea44b382618af2391
+size_bytes=100912
+sha256=be66f22507b734c8a432c4c85f0079cc7461caaa92ee3277d50ea8f62ce95ff7
 ```
 
 ## Evidence Level
