@@ -19,7 +19,7 @@
   "ipc_abi": "cellscript-btc-bip340-ipc-v0",
   "artifact_hash": "0xbe66f22507b734c8a432c4c85f0079cc7461caaa92ee3277d50ea8f62ce95ff7",
   "artifact_hash_algorithm": "sha256",
-  "source_tree_sha256": "0x7e8e499149440c73569b24365602f1a24257a4da21c9fdad30f326b24c0c89cb",
+  "source_tree_sha256": "0xc7de08a7a40150390a2374a5789b29a3c05af37237f7056f3b93e951c73f1ef0",
   "report_uri": "REPLACE_WITH_EXTERNAL_REVIEW_REPORT_OR_COMMIT_URI",
   "notes": [
     "This file is a template, not an attestation.",
