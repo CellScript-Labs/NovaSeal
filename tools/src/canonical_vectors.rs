@@ -25,7 +25,7 @@ fn hex0x(bytes: &[u8]) -> String {
     format!("0x{}", hex::encode(bytes))
 }
 
-fn python_str(value: &Value) -> String {
+fn reference_value_text(value: &Value) -> String {
     match value {
         Value::String(value) => value.clone(),
         Value::Bool(true) => "True".into(),
@@ -33,7 +33,7 @@ fn python_str(value: &Value) -> String {
         Value::Null => "None".into(),
         Value::Number(value) => value.to_string(),
         Value::Array(values) => {
-            format!("[{}]", values.iter().map(|value| format!("{:?}", python_str(value))).collect::<Vec<_>>().join(", "))
+            format!("[{}]", values.iter().map(|value| format!("{:?}", reference_value_text(value))).collect::<Vec<_>>().join(", "))
         }
         Value::Object(_) => serde_json::to_string(value).unwrap_or_default(),
     }
@@ -48,7 +48,7 @@ fn byte32(value: &Value) -> (Vec<u8>, &'static str) {
             return (bytes, "literal_hex");
         }
     }
-    (blake(b"NovaSealVecV0", &[b"Byte32", b"\0", python_str(value).as_bytes()]).to_vec(), "derived_from_placeholder")
+    (blake(b"NovaSealVecV0", &[b"Byte32", b"\0", reference_value_text(value).as_bytes()]).to_vec(), "derived_from_placeholder")
 }
 
 fn uint(value: &Value, size: usize, context: &str) -> Result<(Vec<u8>, &'static str, u64)> {
@@ -94,7 +94,7 @@ fn encode_outpoint(value: &Value, context: &str) -> Result<(Vec<u8>, Value, &'st
             "object",
         )
     } else {
-        (json!(format!("{}:tx_hash", python_str(value))), json!(0), "derived_from_placeholder")
+        (json!(format!("{}:tx_hash", reference_value_text(value))), json!(0), "derived_from_placeholder")
     };
     let (tx_hash, tx_source) = byte32(&tx_hash_value);
     let (index, index_source, number) = uint(&index_value, 4, &format!("{context}.index"))?;
@@ -239,7 +239,7 @@ fn truthy(value: &Value) -> bool {
 }
 
 fn model_hash(value: &Value) -> String {
-    hex0x(&blake(b"NovaSealModel", &[python_str(value).as_bytes()]))
+    hex0x(&blake(b"NovaSealModel", &[reference_value_text(value).as_bytes()]))
 }
 
 pub(crate) fn normalize(fixture: &Value) -> Value {
@@ -261,7 +261,7 @@ pub(crate) fn normalize(fixture: &Value) -> Value {
         value
     } else {
         let text = raw.get("btc_signature").cloned().unwrap_or_else(|| baseline()["btc_signature"].clone());
-        let text = python_str(&text).to_lowercase();
+        let text = reference_value_text(&text).to_lowercase();
         if ["invalid", "failure", "reject"].iter().any(|token| text.contains(token)) {
             false
         } else {
@@ -280,7 +280,7 @@ fn outpoint(value: &Value) -> (Value, u64) {
     if let Some(object) = value.as_object() {
         return (object.get("tx_hash").cloned().unwrap_or(Value::Null), object.get("index").and_then(Value::as_u64).unwrap_or(0));
     }
-    (json!(format!("{}:tx_hash", python_str(value))), 0)
+    (json!(format!("{}:tx_hash", reference_value_text(value))), 0)
 }
 
 pub(crate) fn model_result(model: &Value) -> Value {

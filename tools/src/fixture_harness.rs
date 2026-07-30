@@ -50,7 +50,7 @@ fn field(value: &Value, name: &str) -> Value {
     value.get(name).cloned().unwrap_or(Value::Null)
 }
 
-fn python_scalar(value: &Value) -> String {
+fn report_scalar(value: &Value) -> String {
     match value {
         Value::Bool(true) => "True".into(),
         Value::Bool(false) => "False".into(),
@@ -327,17 +327,17 @@ pub fn run(
     println!("wrote {}", output_display.display());
     println!(
         "summary: fixtures={} matched={} mismatched={} ckb_vm_executed={} child_verifier_ckb_vm_executed={} parent_lock_abi_preflight_passed={} parent_lock_ckb_vm_executed={} parent_lock_spawn_executed={} parent_lock_tx_shape_constructed={} parent_lock_resolved_script_verifier_executed={} parent_lock_resolved_script_verifier_matched_expected={} parent_lock_full_tx_executed={} parent_lock_full_tx_matched_expected={} state_type_vm_executed={} state_type_matched_expected={} shared_witness_abi_aligned={} combined_full_tx_executed={} combined_full_tx_matched_expected={} wallet_lock_alignment_ready={}",
-        python_scalar(&summary["fixtures"]), python_scalar(&summary["matched"]), python_scalar(&summary["mismatched"]),
-        python_scalar(&summary["ckb_vm_executed"]), python_scalar(&summary["child_verifier_ckb_vm_executed"]),
-        python_scalar(&summary["parent_lock_abi_preflight_passed"]), python_scalar(&summary["parent_lock_ckb_vm_executed"]),
-        python_scalar(&summary["parent_lock_spawn_executed"]), python_scalar(&summary["parent_lock_transaction_shape_constructed"]),
-        python_scalar(&summary["parent_lock_resolved_script_verifier_executed"]),
-        python_scalar(&summary["parent_lock_resolved_script_verifier_matched_expected"]),
-        python_scalar(&summary["parent_lock_full_transaction_executed"]),
-        python_scalar(&summary["parent_lock_full_transaction_verifier_matched_expected"]),
-        python_scalar(&summary["state_type_action_ckb_vm_executed"]), python_scalar(&summary["state_type_action_matched_expected"]),
-        python_scalar(&summary["shared_lock_type_witness_abi_aligned"]), python_scalar(&summary["combined_full_transaction_executed"]),
-        python_scalar(&summary["combined_full_transaction_matched_expected"]), python_scalar(&summary["wallet_lock_alignment_ready"])
+        report_scalar(&summary["fixtures"]), report_scalar(&summary["matched"]), report_scalar(&summary["mismatched"]),
+        report_scalar(&summary["ckb_vm_executed"]), report_scalar(&summary["child_verifier_ckb_vm_executed"]),
+        report_scalar(&summary["parent_lock_abi_preflight_passed"]), report_scalar(&summary["parent_lock_ckb_vm_executed"]),
+        report_scalar(&summary["parent_lock_spawn_executed"]), report_scalar(&summary["parent_lock_transaction_shape_constructed"]),
+        report_scalar(&summary["parent_lock_resolved_script_verifier_executed"]),
+        report_scalar(&summary["parent_lock_resolved_script_verifier_matched_expected"]),
+        report_scalar(&summary["parent_lock_full_transaction_executed"]),
+        report_scalar(&summary["parent_lock_full_transaction_verifier_matched_expected"]),
+        report_scalar(&summary["state_type_action_ckb_vm_executed"]), report_scalar(&summary["state_type_action_matched_expected"]),
+        report_scalar(&summary["shared_lock_type_witness_abi_aligned"]), report_scalar(&summary["combined_full_transaction_executed"]),
+        report_scalar(&summary["combined_full_transaction_matched_expected"]), report_scalar(&summary["wallet_lock_alignment_ready"])
     );
     Ok(if summary["mismatched"] == 0 { 0 } else { 1 })
 }

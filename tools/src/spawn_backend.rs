@@ -182,7 +182,7 @@ fn manifest_probe(cellc: &Path, temp: &Path) -> Result<Value> {
     }))
 }
 
-fn python_scalar(value: &Value) -> String {
+fn report_scalar(value: &Value) -> String {
     match value {
         Value::Bool(true) => "True".into(),
         Value::Bool(false) => "False".into(),
@@ -269,12 +269,12 @@ pub fn run(root: &Path, cellc: Option<&Path>, output: Option<&Path>, audit_surfa
     println!("wrote {}", output_display.display());
     println!(
         "summary: compile_passed={} all_calls_lowered={} generic_btc_bip340_helper_lowered={} spawn_with_fd_helper_executable={} fail_closed_stub={} strict_rejects_spawn_target={} manifest_bound_strict_passes={}",
-        python_scalar(&report["compile"]["passed"]), python_scalar(&report["status"]["all_spawn_ipc_calls_lowered"]),
-        python_scalar(&report["status"]["generic_btc_bip340_helper_lowered"]),
-        python_scalar(&report["status"]["spawn_with_fd_helper_executable"]),
-        python_scalar(&report["status"]["spawn_with_fd_helper_fail_closed_stub"]),
-        python_scalar(&report["status"]["strict_rejects_spawn_target"]),
-        python_scalar(&report["status"]["manifest_bound_spawn_target_strict_passes"])
+        report_scalar(&report["compile"]["passed"]), report_scalar(&report["status"]["all_spawn_ipc_calls_lowered"]),
+        report_scalar(&report["status"]["generic_btc_bip340_helper_lowered"]),
+        report_scalar(&report["status"]["spawn_with_fd_helper_executable"]),
+        report_scalar(&report["status"]["spawn_with_fd_helper_fail_closed_stub"]),
+        report_scalar(&report["status"]["strict_rejects_spawn_target"]),
+        report_scalar(&report["status"]["manifest_bound_spawn_target_strict_passes"])
     );
     Ok(0)
 }
