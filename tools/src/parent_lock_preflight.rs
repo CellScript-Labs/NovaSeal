@@ -80,8 +80,10 @@ fn checks(assembly: &str) -> Value {
                 && !assembly.contains("bind read-only param expected_btc_authority_hash to CellDep#")
         ),
     );
-    values
-        .insert("protected_cell_bound_from_input0".into(), json!(assembly.contains("bind read-only param cell to Input#0 cell data")));
+    values.insert(
+        "protected_cell_bound_from_input0".into(),
+        json!(assembly.contains("bind read-only param cell to GroupInput#0 cell data")),
+    );
     values.insert("spawn_with_fd_helper_visible".into(), json!(assembly.contains("__ckb_spawn_with_fd1")));
     values.insert("vm2_spawn_syscall_visible".into(), json!(assembly.contains("li a7, 2601")));
     values.insert("vm2_wait_syscall_visible".into(), json!(assembly.contains("li a7, 2602")));
