@@ -59,6 +59,7 @@ matched_expected=4
 mismatched=0
 parent_max_cycles=48705
 child_max_cycles=3467834
+child_max_stack_bytes=15792
 resolved_script_verifier_max_cycles=3679593
 full_transaction_verifier_max_cycles=3679593
 max_consensus_tx_size_bytes=879

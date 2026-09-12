@@ -387,6 +387,7 @@
       "parent_min_cycles": 28633,
       "parent_max_cycles": 48705,
       "child_max_cycles": 3467834,
+      "child_max_stack_bytes": 15792,
       "load_script_calls": 4,
       "load_witness_calls": 4,
       "load_cell_data_calls": 4,
@@ -632,7 +633,7 @@
         "../tools/src/spawn_backend.rs confirms executable VM2 spawn/IPC helpers, strict rejection for unmanifested spawn-target:CellDep#0@0x..., builder-required audit records for first-CellDep code manifest-bound spawn targets, a one-fd inherited-fd contract, and lowering of the generic BTC BIP340 helper to the fixed 18-word envelope shape; transaction cell_deps[0] and builder evidence must identify CellDep#0, the manifest name, dep_type, and any manifest-pinned out-point/hash fields",
         "../tools/src/parent_lock_preflight.rs confirms the parent lock ASM/ELF builds, Script.args lock_args binding is pointer-safe, expected_btc_authority_hash is not rebound from input cell data, protected cell remains GroupInput#0-bound, and VM2 spawn/pipe/wait surfaces are present",
         "harness/ckb_vm --bin novaseal_parent_lock_harness executes the parent lock ELF in ckb-vm, observes VM2 spawn/wait, runs the staged child verifier ELF in nested ckb-vm, accepts the valid parent-computed digest/signature case, rejects a signature bitflip, rejects a valid signature by a non-authority x-only pubkey before spawn, and rejects authority-hash mismatch before spawn",
-        "the parent-lock harness constructs a ckb-types consensus-packed ResolvedTransaction with cell_deps[0] as the child verifier code dep, a parent lock code dep, one lock ScriptGroup input, max_consensus_tx_size_bytes=879, max_output_occupied_capacity_shannons=21900000000, under_capacity_shape_rejects=true, resolved_script_verifier_matched_expected=true, resolved_script_verifier_max_cycles=3679593, full_transaction_verifier_matched_expected=true, and full_transaction_verifier_max_cycles=3679593",
+        "the parent-lock harness constructs a ckb-types consensus-packed ResolvedTransaction with cell_deps[0] as the child verifier code dep, a parent lock code dep, one lock ScriptGroup input, child_max_stack_bytes=15792, max_consensus_tx_size_bytes=879, max_output_occupied_capacity_shannons=21900000000, under_capacity_shape_rejects=true, resolved_script_verifier_matched_expected=true, resolved_script_verifier_max_cycles=3679593, full_transaction_verifier_matched_expected=true, and full_transaction_verifier_max_cycles=3679593",
         "cargo test for verifier/novaseal_btc_verifier passes 5 unit tests"
       ],
       "gaps": [

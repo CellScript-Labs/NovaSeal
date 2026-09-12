@@ -28,12 +28,13 @@ use ckb_types::{
     prelude::*,
 };
 use ckb_vm::{
-    Bytes, DefaultCoreMachine, DefaultMachineBuilder, ISA_B, ISA_IMC, ISA_MOP, SparseMemory, SupportMachine, Syscalls, TraceMachine,
-    WXorXMemory,
+    Bytes, CoreMachine, DefaultCoreMachine, DefaultMachineBuilder, ISA_B, ISA_IMC, ISA_MOP, SparseMemory, SupportMachine, Syscalls,
+    TraceMachine, WXorXMemory,
     cost_model::estimate_cycles,
+    decoder::build_decoder,
     machine::VERSION2,
     memory::Memory,
-    registers::{A0, A1, A2, A3, A4, A5, A7},
+    registers::{A0, A1, A2, A3, A4, A5, A7, SP},
 };
 use k256::schnorr::SigningKey;
 use serde::Serialize;
@@ -227,6 +228,7 @@ struct Summary {
     parent_min_cycles: u64,
     parent_max_cycles: u64,
     child_max_cycles: u64,
+    child_max_stack_bytes: u64,
     load_script_calls: usize,
     load_witness_calls: usize,
     load_cell_data_calls: usize,
@@ -374,6 +376,7 @@ struct ParentSyscallTrace {
     child_verifier_runs: usize,
     child_exit_code: Option<i8>,
     child_cycles: Option<u64>,
+    child_max_stack_bytes: Option<u64>,
     child_error: Option<String>,
     parent_pipe_words: Vec<String>,
 }
@@ -430,6 +433,7 @@ struct TransactionContext {
 struct ChildRun {
     exit_code: i8,
     cycles: u64,
+    max_stack_bytes: u64,
 }
 
 impl<Mac: SupportMachine<REG = u64>> Syscalls<Mac> for ParentSyscalls {
@@ -702,6 +706,7 @@ impl ParentSyscalls {
                     trace.child_verifier_runs += 1;
                     trace.child_exit_code = Some(child.exit_code);
                     trace.child_cycles = Some(child.cycles);
+                    trace.child_max_stack_bytes = Some(child.max_stack_bytes);
                 }
                 Err(error) => {
                     let mut trace = self.trace.lock().expect("trace mutex poisoned");
@@ -1072,8 +1077,22 @@ fn run_child_elf(elf: &[u8], words: &[u64], fd: u64, max_cycles: u64) -> Result<
         DefaultMachineBuilder::new(core_machine).instruction_cycle_func(Box::new(estimate_cycles)).syscall(Box::new(syscall));
     let mut machine = HarnessMachine::new(builder.build());
     machine.load_program(&Bytes::copy_from_slice(elf), &[]).map_err(|error| format!("{error}"))?;
-    let exit_code = machine.run().map_err(|error| format!("{error}"))?;
-    Ok(ChildRun { exit_code, cycles: machine.machine.cycles() })
+    let initial_stack_pointer = machine.machine.registers()[SP];
+    let mut minimum_stack_pointer = initial_stack_pointer;
+    let mut decoder = build_decoder::<u64>(machine.machine.isa(), machine.machine.version());
+    machine.machine.set_running(true);
+    while machine.machine.running() {
+        if machine.machine.reset_signal() {
+            decoder.reset_instructions_cache();
+        }
+        machine.machine.step(&mut decoder).map_err(|error| format!("{error}"))?;
+        minimum_stack_pointer = minimum_stack_pointer.min(machine.machine.registers()[SP]);
+    }
+    Ok(ChildRun {
+        exit_code: machine.machine.exit_code(),
+        cycles: machine.machine.cycles(),
+        max_stack_bytes: initial_stack_pointer.saturating_sub(minimum_stack_pointer),
+    })
 }
 
 fn build_transaction_context(parent_elf: &[u8], child_elf: &[u8], case: &ParentCase) -> Result<TransactionContext, HarnessError> {
@@ -1358,6 +1377,8 @@ fn build_report(args: &Args, parent_elf: &[u8], child_elf: &[u8], cases: Vec<Cas
     let parent_min_cycles = cases.iter().map(|case| case.parent_cycles).min().unwrap_or_default();
     let parent_max_cycles = cases.iter().map(|case| case.parent_cycles).max().unwrap_or_default();
     let child_max_cycles = cases.iter().filter_map(|case| case.syscall_trace.child_cycles).max().unwrap_or_default();
+    let child_max_stack_bytes =
+        cases.iter().filter_map(|case| case.syscall_trace.child_max_stack_bytes).max().unwrap_or_default();
     let max_consensus_tx_size_bytes =
         cases.iter().map(|case| case.transaction_shape.consensus_tx_size_bytes).max().unwrap_or_default();
     let max_output_occupied_capacity_shannons =
@@ -1414,6 +1435,7 @@ fn build_report(args: &Args, parent_elf: &[u8], child_elf: &[u8], cases: Vec<Cas
             parent_min_cycles,
             parent_max_cycles,
             child_max_cycles,
+            child_max_stack_bytes,
             load_script_calls: cases.iter().map(|case| case.syscall_trace.load_script_calls).sum(),
             load_witness_calls: cases.iter().map(|case| case.syscall_trace.load_witness_calls).sum(),
             load_cell_data_calls: cases.iter().map(|case| case.syscall_trace.load_cell_data_calls).sum(),
@@ -1625,7 +1647,7 @@ fn write_report(path: &Path, report: &Report, pretty: bool) -> Result<(), Harnes
 fn print_summary(path: &Path, report: &Report) {
     println!("wrote {}", path.display());
     println!(
-        "summary: parent_vm_executed={} parent_spawn_executed={} child_vm_executed={} tx_shape_constructed={} resolved_script_verifier_executed={} resolved_script_verifier_matched_expected={} full_tx_executed={} full_tx_matched_expected={} total={} accepted={} rejected={} matched_expected={} mismatched={} parent_max_cycles={} child_max_cycles={} resolved_script_max_cycles={} full_tx_max_cycles={} max_tx_size_bytes={} max_occupied_capacity_shannons={}",
+        "summary: parent_vm_executed={} parent_spawn_executed={} child_vm_executed={} tx_shape_constructed={} resolved_script_verifier_executed={} resolved_script_verifier_matched_expected={} full_tx_executed={} full_tx_matched_expected={} total={} accepted={} rejected={} matched_expected={} mismatched={} parent_max_cycles={} child_max_cycles={} child_max_stack_bytes={} resolved_script_max_cycles={} full_tx_max_cycles={} max_tx_size_bytes={} max_occupied_capacity_shannons={}",
         report.summary.parent_lock_ckb_vm_executed,
         report.summary.parent_spawn_executed,
         report.summary.child_verifier_ckb_vm_executed,
@@ -1641,6 +1663,7 @@ fn print_summary(path: &Path, report: &Report) {
         report.summary.mismatched,
         report.summary.parent_max_cycles,
         report.summary.child_max_cycles,
+        report.summary.child_max_stack_bytes,
         report.summary.resolved_script_verifier_max_cycles,
         report.summary.full_transaction_verifier_max_cycles,
         report.summary.max_consensus_tx_size_bytes,
