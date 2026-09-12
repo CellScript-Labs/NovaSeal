@@ -83,7 +83,7 @@ parent_vm_matched_expected=4
 parent_resolved_script_verifier_matched_expected=true
 parent_full_transaction_verifier_matched_expected=true
 parent_lock_transaction_shape_constructed=true
-parent_lock_max_consensus_tx_size_bytes=859
+parent_lock_max_consensus_tx_size_bytes=879
 parent_lock_max_output_occupied_capacity_shannons=21900000000
 ```
 

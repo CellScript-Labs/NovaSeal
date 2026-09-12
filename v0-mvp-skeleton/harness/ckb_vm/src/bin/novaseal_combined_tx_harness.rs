@@ -866,16 +866,17 @@ fn build_output_cell(fixture: &str, old_cell: &[u8], intent: &[u8], receipt_hash
 }
 
 fn build_witness(intent: &[u8], state_hash_commitment: &[u8], signature_payload: &[u8]) -> Vec<u8> {
-    let mut witness = Vec::with_capacity(
+    let mut payload = Vec::with_capacity(
         LOCK_WITNESS_MAGIC.len() + 4 + intent.len() + state_hash_commitment.len() + 4 + signature_payload.len(),
     );
-    witness.extend_from_slice(LOCK_WITNESS_MAGIC);
-    witness.extend_from_slice(&(intent.len() as u32).to_le_bytes());
-    witness.extend_from_slice(intent);
-    witness.extend_from_slice(state_hash_commitment);
-    witness.extend_from_slice(&(signature_payload.len() as u32).to_le_bytes());
-    witness.extend_from_slice(signature_payload);
-    witness
+    payload.extend_from_slice(LOCK_WITNESS_MAGIC);
+    payload.extend_from_slice(&(intent.len() as u32).to_le_bytes());
+    payload.extend_from_slice(intent);
+    payload.extend_from_slice(state_hash_commitment);
+    payload.extend_from_slice(&(signature_payload.len() as u32).to_le_bytes());
+    payload.extend_from_slice(signature_payload);
+
+    packed::WitnessArgs::new_builder().input_type(Some(CkbBytes::from(payload)).pack()).build().as_bytes().to_vec()
 }
 
 fn sign_intent(intent: &[u8]) -> Result<Vec<u8>, HarnessError> {
@@ -996,8 +997,12 @@ fn validate_expected_result(fixture: &str, expected: &str, failure_mode: Option<
 
 fn expected_failure_scope(failure_mode: Option<&str>) -> Option<&'static str> {
     match failure_mode {
-        Some("btc_signature_verification_failed" | "policy_hash_mismatch" | "authority_hash_mapping_mismatch") => Some("lock"),
-        Some("btc_authority_pubkey_mismatch") => Some("lock"),
+        Some(
+            "btc_signature_verification_failed"
+            | "policy_hash_mismatch"
+            | "authority_hash_mapping_mismatch"
+            | "btc_authority_pubkey_mismatch",
+        ) => Some("lock"),
         Some(
             "intent_expired"
             | "nonce_must_increment"

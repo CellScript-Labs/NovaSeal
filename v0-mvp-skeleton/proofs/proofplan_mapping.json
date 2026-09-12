@@ -42,8 +42,8 @@
       "transaction_measurement_evidence": {
         "measured": true,
         "measurement_layer": "combined-transaction-harness",
-        "max_full_transaction_cycles": 7565341,
-        "max_consensus_tx_size_bytes": 1484,
+        "max_full_transaction_cycles": 7444227,
+        "max_consensus_tx_size_bytes": 1504,
         "max_output_occupied_capacity_shannons": 70700000000
       }
     }
@@ -63,11 +63,11 @@
       "combined_full_transaction_accepted": 1,
       "combined_full_transaction_executed": true,
       "combined_full_transaction_matched_expected": true,
-      "combined_full_transaction_max_cycles": 7565341,
+      "combined_full_transaction_max_cycles": 7444227,
       "combined_full_transaction_rejected": 10,
       "combined_full_transaction_total_cases": 11,
       "combined_lock_and_type_script_groups_present": true,
-      "combined_max_consensus_tx_size_bytes": 1484,
+      "combined_max_consensus_tx_size_bytes": 1504,
       "combined_max_fee_shannons": 100000,
       "combined_max_output_occupied_capacity_shannons": 70700000000,
       "combined_min_fee_shannons": 100000,
@@ -94,19 +94,19 @@
       "parent_lock_consensus_packed_tx_constructed": true,
       "parent_lock_full_transaction_executed": true,
       "parent_lock_full_transaction_verifier_matched_expected": true,
-      "parent_lock_full_transaction_verifier_max_cycles": 3699141,
-      "parent_lock_max_consensus_tx_size_bytes": 859,
+      "parent_lock_full_transaction_verifier_max_cycles": 3679593,
+      "parent_lock_max_consensus_tx_size_bytes": 879,
       "parent_lock_max_output_occupied_capacity_shannons": 21900000000,
       "parent_lock_resolved_script_verifier_executed": true,
       "parent_lock_resolved_script_verifier_matched_expected": true,
-      "parent_lock_resolved_script_verifier_max_cycles": 3699141,
+      "parent_lock_resolved_script_verifier_max_cycles": 3679593,
       "parent_lock_resolved_transaction_constructed": true,
       "parent_lock_spawn_executed": true,
       "parent_lock_transaction_shape_constructed": true,
       "parent_lock_under_capacity_shape_rejects": true,
       "shared_lock_type_witness_abi": "CSARGv1:NovaSealSignedIntentV0,state_hash_commitment,SignaturePayload",
       "shared_lock_type_witness_abi_aligned": true,
-      "shared_lock_type_witness_size_bytes": 398,
+      "shared_lock_type_witness_size_bytes": 418,
       "state_type_action_ckb_vm_executed": true,
       "state_type_action_matched_expected": true,
       "state_type_schema_cell_intent_aligned": true,
@@ -351,7 +351,7 @@
       "expected_btc_authority_hash consumes exactly 32 Script.args bytes",
       "Script.args u32 decoding does not clobber its base pointer",
       "expected_btc_authority_hash is not rebound from Input#N or CellDep#N data",
-      "protected cell remains bound from Input#0 cell data",
+      "protected cell remains bound from GroupInput#0 cell data",
       "VM2 spawn_with_fd, spawn, wait, pipe_write, and close surfaces are visible"
     ],
     "limits": [
@@ -384,8 +384,8 @@
       "rejected": 3,
       "matched_expected": 4,
       "mismatched": 0,
-      "parent_min_cycles": 33425,
-      "parent_max_cycles": 64389,
+      "parent_min_cycles": 28633,
+      "parent_max_cycles": 48705,
       "child_max_cycles": 3467834,
       "load_script_calls": 4,
       "load_witness_calls": 4,
@@ -395,15 +395,15 @@
       "spawn_calls": 2,
       "wait_calls": 2,
       "close_calls": 2,
-      "max_consensus_tx_size_bytes": 859,
+      "max_consensus_tx_size_bytes": 879,
       "max_output_occupied_capacity_shannons": 21900000000,
       "min_capacity_margin_shannons": 10000000000,
       "capacity_shape_checks_passed": true,
       "under_capacity_shape_rejects": true,
       "cell_dep0_spawn_target_modelled": true,
       "parent_lock_dep_modelled": true,
-      "resolved_script_verifier_max_cycles": 3699141,
-      "full_transaction_verifier_max_cycles": 3699141
+      "resolved_script_verifier_max_cycles": 3679593,
+      "full_transaction_verifier_max_cycles": 3679593
     },
     "cases": [
       "valid parent-computed digest plus BIP340 signature accepts",
@@ -630,9 +630,9 @@
         "../tools/src/riscv_artifact.rs pins the staged BIP340 release ELF and confirms generated_spawn_visible=true",
         "harness/ckb_vm executes the staged child verifier ELF in ckb-vm with official VM2 buffer/length syscalls, accepts 44 valid IPC cases, rejects 61 invalid/malformed cases including a complete trailing-word stream, and records max_cycles=3467842",
         "../tools/src/spawn_backend.rs confirms executable VM2 spawn/IPC helpers, strict rejection for unmanifested spawn-target:CellDep#0@0x..., builder-required audit records for first-CellDep code manifest-bound spawn targets, a one-fd inherited-fd contract, and lowering of the generic BTC BIP340 helper to the fixed 18-word envelope shape; transaction cell_deps[0] and builder evidence must identify CellDep#0, the manifest name, dep_type, and any manifest-pinned out-point/hash fields",
-        "../tools/src/parent_lock_preflight.rs confirms the parent lock ASM/ELF builds, Script.args lock_args binding is pointer-safe, expected_btc_authority_hash is not rebound from input cell data, protected cell remains Input#0-bound, and VM2 spawn/pipe/wait surfaces are present",
+        "../tools/src/parent_lock_preflight.rs confirms the parent lock ASM/ELF builds, Script.args lock_args binding is pointer-safe, expected_btc_authority_hash is not rebound from input cell data, protected cell remains GroupInput#0-bound, and VM2 spawn/pipe/wait surfaces are present",
         "harness/ckb_vm --bin novaseal_parent_lock_harness executes the parent lock ELF in ckb-vm, observes VM2 spawn/wait, runs the staged child verifier ELF in nested ckb-vm, accepts the valid parent-computed digest/signature case, rejects a signature bitflip, rejects a valid signature by a non-authority x-only pubkey before spawn, and rejects authority-hash mismatch before spawn",
-        "the parent-lock harness constructs a ckb-types consensus-packed ResolvedTransaction with cell_deps[0] as the child verifier code dep, a parent lock code dep, one lock ScriptGroup input, max_consensus_tx_size_bytes=859, max_output_occupied_capacity_shannons=21900000000, under_capacity_shape_rejects=true, resolved_script_verifier_matched_expected=true, resolved_script_verifier_max_cycles=3699141, full_transaction_verifier_matched_expected=true, and full_transaction_verifier_max_cycles=3699141",
+        "the parent-lock harness constructs a ckb-types consensus-packed ResolvedTransaction with cell_deps[0] as the child verifier code dep, a parent lock code dep, one lock ScriptGroup input, max_consensus_tx_size_bytes=879, max_output_occupied_capacity_shannons=21900000000, under_capacity_shape_rejects=true, resolved_script_verifier_matched_expected=true, resolved_script_verifier_max_cycles=3679593, full_transaction_verifier_matched_expected=true, and full_transaction_verifier_max_cycles=3679593",
         "cargo test for verifier/novaseal_btc_verifier passes 5 unit tests"
       ],
       "gaps": [
@@ -641,7 +641,7 @@
       ],
       "notes": "Criterion 6 is split for audit semantics: 6a covers cryptographic invalid-signature rejection, while 6b covers identity binding when a signature is valid under the wrong x-only pubkey. The evidence stack includes host-reference verifier evidence, RISC-V shell evidence, child-verifier CKB VM evidence, parent-lock CKB VM evidence, resolved/full transaction verifier evidence, combined eleven-fixture local contextual verifier evidence, live devnet wrong-signature dry-run evidence, wrong-pubkey-valid-signature authority-binding evidence, authority mapping mismatch evidence, implicit authority-rotation rejection evidence, and a local TCB review bundle. Public/mainnet deployment evidence still requires public/shared deployment attestation and external verifier review.",
       "evidence": [
-        "combined_tx_harness: all eleven fixtures run through ckb-script full transaction verifier with lock and type/action ScriptGroups present; accepted=1 rejected=10 matched_expected=11 max_cycles=7565341 max_tx_size_bytes=1484 max_occupied_capacity_shannons=70700000000",
+        "combined_tx_harness: all eleven fixtures run through ckb-script full transaction verifier with lock and type/action ScriptGroups present; accepted=1 rejected=10 matched_expected=11 max_cycles=7444227 max_tx_size_bytes=1504 max_occupied_capacity_shannons=70700000000",
         "combined_tx_harness builder-shape: fee_shape_checks_passed=true builder_shape_checks_passed=true under_capacity_shape_rejects=true min_fee_shannons=100000 max_fee_shannons=100000"
       ],
       "covered_by_generated_audit": "external_harness_evidence_not_generated_audit"
@@ -725,14 +725,16 @@
       "u32 signature_payload_len",
       "SignaturePayload"
     ],
-    "witness_size_bytes": 398,
+    "witness_size_bytes": 418,
+    "entry_payload_size_bytes": 398,
+    "placement": "WitnessArgs.input_type",
     "intent_size_bytes": 254,
     "signature_payload_size_bytes": 96,
     "evidence": [
       "fixture_harness shared_lock_type_witness_abi_aligned=true",
-      "parent_lock_ckb_vm_harness witness_size_bytes=398",
-      "state_type_ckb_vm_harness witness_size_bytes=398",
-      "combined_tx_harness shared_witness_size_bytes=398"
+      "parent_lock_ckb_vm_harness witness_size_bytes=418",
+      "state_type_ckb_vm_harness witness_size_bytes=418",
+      "combined_tx_harness shared_witness_size_bytes=418"
     ],
     "limits": [
       "shared witness ABI is exercised by state-type, parent-lock, and combined lock+type harnesses; it still does not prove public/shared deployment attestation"
@@ -764,7 +766,7 @@
       "lock_and_type_script_groups_present": true,
       "child_spawn_target_cell_dep0_modelled": true,
       "shared_witness_abi_aligned": true,
-      "shared_witness_size_bytes": 398,
+      "shared_witness_size_bytes": 418,
       "builder_shape_checks_passed": true,
       "fee_shape_checks_passed": true,
       "under_capacity_shape_rejects": true,
@@ -774,9 +776,9 @@
       "max_fee_shannons": 100000,
       "min_node_stack_fee_shannons": 100000,
       "max_node_stack_fee_shannons": 100000,
-      "max_full_transaction_cycles": 7565341,
-      "max_node_stack_cycles": 7565341,
-      "max_consensus_tx_size_bytes": 1484,
+      "max_full_transaction_cycles": 7444227,
+      "max_node_stack_cycles": 7444227,
+      "max_consensus_tx_size_bytes": 1504,
       "max_output_occupied_capacity_shannons": 70700000000,
       "min_capacity_margin_shannons": 10000000000
     },

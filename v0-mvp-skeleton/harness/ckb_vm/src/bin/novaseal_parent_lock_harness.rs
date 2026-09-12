@@ -33,7 +33,7 @@ use ckb_vm::{
     cost_model::estimate_cycles,
     machine::VERSION2,
     memory::Memory,
-    registers::{A0, A1, A2, A3, A4, A7},
+    registers::{A0, A1, A2, A3, A4, A5, A7},
 };
 use k256::schnorr::SigningKey;
 use serde::Serialize;
@@ -52,7 +52,9 @@ const CKB_SOURCE_CELL_DEP: u64 = 0x03;
 const CKB_SOURCE_GROUP_INPUT: u64 = 0x0100_0000_0000_0000 | CKB_SOURCE_INPUT;
 
 const CKB_LOAD_SCRIPT_SYSCALL_NUMBER: u64 = 2052;
+const CKB_LOAD_SCRIPT_HASH_SYSCALL_NUMBER: u64 = 2062;
 const CKB_LOAD_WITNESS_SYSCALL_NUMBER: u64 = 2074;
+const CKB_LOAD_CELL_BY_FIELD_SYSCALL_NUMBER: u64 = 2081;
 const CKB_LOAD_CELL_DATA_SYSCALL_NUMBER: u64 = 2092;
 const CKB_VM2_SPAWN_SYSCALL_NUMBER: u64 = 2601;
 const CKB_VM2_WAIT_SYSCALL_NUMBER: u64 = 2602;
@@ -62,6 +64,9 @@ const CKB_VM2_PIPE_READ_SYSCALL_NUMBER: u64 = 2606;
 const CKB_VM2_INHERITED_FD_SYSCALL_NUMBER: u64 = 2607;
 const CKB_VM2_CLOSE_SYSCALL_NUMBER: u64 = 2608;
 const CKB_PLACE_CELL: u64 = 0;
+const CKB_CELL_FIELD_LOCK_HASH: u64 = 3;
+const CKB_CELL_FIELD_TYPE_HASH: u64 = 5;
+const CKB_ITEM_MISSING: u64 = 2;
 
 const CHILD_INPUT_FD: u64 = 100;
 const PARENT_READ_FD: u64 = 200;
@@ -438,8 +443,16 @@ impl<Mac: SupportMachine<REG = u64>> Syscalls<Mac> for ParentSyscalls {
                 self.load_script(machine)?;
                 Ok(true)
             }
+            CKB_LOAD_SCRIPT_HASH_SYSCALL_NUMBER => {
+                self.load_script_hash(machine)?;
+                Ok(true)
+            }
             CKB_LOAD_WITNESS_SYSCALL_NUMBER => {
                 self.load_witness(machine)?;
+                Ok(true)
+            }
+            CKB_LOAD_CELL_BY_FIELD_SYSCALL_NUMBER => {
+                self.load_cell_by_field(machine)?;
                 Ok(true)
             }
             CKB_LOAD_CELL_DATA_SYSCALL_NUMBER => {
@@ -481,6 +494,14 @@ impl ParentSyscalls {
         self.load_bytes(machine, &script, buffer, size_ptr, offset)
     }
 
+    fn load_script_hash<Mac: SupportMachine<REG = u64>>(&mut self, machine: &mut Mac) -> Result<(), ckb_vm::Error> {
+        let buffer = machine.registers()[A0];
+        let size_ptr = machine.registers()[A1];
+        let offset = machine.registers()[A2];
+        let script_hash = ckb_blake2b256(&self.script);
+        self.load_bytes(machine, &script_hash, buffer, size_ptr, offset)
+    }
+
     fn load_witness<Mac: SupportMachine<REG = u64>>(&mut self, machine: &mut Mac) -> Result<(), ckb_vm::Error> {
         self.trace.lock().expect("trace mutex poisoned").load_witness_calls += 1;
         let buffer = machine.registers()[A0];
@@ -497,6 +518,29 @@ impl ParentSyscalls {
         self.load_bytes(machine, &witness, buffer, size_ptr, offset)
     }
 
+    fn load_cell_by_field<Mac: SupportMachine<REG = u64>>(&mut self, machine: &mut Mac) -> Result<(), ckb_vm::Error> {
+        let buffer = machine.registers()[A0];
+        let size_ptr = machine.registers()[A1];
+        let offset = machine.registers()[A2];
+        let index = machine.registers()[A3];
+        let source = machine.registers()[A4];
+        let field = machine.registers()[A5];
+        if index != 0 || source != CKB_SOURCE_GROUP_INPUT {
+            machine.set_register(A0, 1);
+            return Ok(());
+        }
+        if field == CKB_CELL_FIELD_TYPE_HASH {
+            machine.set_register(A0, CKB_ITEM_MISSING);
+            return Ok(());
+        }
+        if field != CKB_CELL_FIELD_LOCK_HASH {
+            machine.set_register(A0, 1);
+            return Ok(());
+        }
+        let script_hash = ckb_blake2b256(&self.script);
+        self.load_bytes(machine, &script_hash, buffer, size_ptr, offset)
+    }
+
     fn load_cell_data<Mac: SupportMachine<REG = u64>>(&mut self, machine: &mut Mac) -> Result<(), ckb_vm::Error> {
         self.trace.lock().expect("trace mutex poisoned").load_cell_data_calls += 1;
         let buffer = machine.registers()[A0];
@@ -504,7 +548,7 @@ impl ParentSyscalls {
         let offset = machine.registers()[A2];
         let index = machine.registers()[A3];
         let source = machine.registers()[A4];
-        if index != 0 || source != CKB_SOURCE_INPUT {
+        if index != 0 || source != CKB_SOURCE_GROUP_INPUT {
             self.trace.lock().expect("trace mutex poisoned").load_failures += 1;
             machine.set_register(A0, 1);
             return Ok(());
@@ -891,7 +935,7 @@ fn build_cases(parent_code_hash: [u8; 32]) -> Result<Vec<ParentCase>, HarnessErr
     let authority_case = build_case(
         "parent_authority_hash_mismatch_reject",
         "reject",
-        Some("Script.args expected_btc_authority_hash does not match Input#0 btc_authority_hash"),
+        Some("Script.args expected_btc_authority_hash does not match GroupInput#0 btc_authority_hash"),
         CaseKind::AuthorityHashMismatch,
         domain,
         policy_hash,
@@ -905,7 +949,7 @@ fn build_cases(parent_code_hash: [u8; 32]) -> Result<Vec<ParentCase>, HarnessErr
     let wrong_pubkey_case = build_case(
         "parent_wrong_pubkey_valid_signature_reject",
         "reject",
-        Some("witness pubkey signs the digest but does not match Input#0 btc_authority_hash"),
+        Some("witness pubkey signs the digest but does not match GroupInput#0 btc_authority_hash"),
         CaseKind::WrongPubkeyValidSignature,
         domain,
         policy_hash,
@@ -1391,7 +1435,7 @@ fn build_report(args: &Args, parent_elf: &[u8], child_elf: &[u8], cases: Vec<Cas
         cases,
         limits: vec![
             "Executes the staged parent CellScript lock ELF in ckb-vm.",
-            "The harness implements only the CKB syscalls needed by this lock surface: load_script, load_witness, load_cell_data, pipe, pipe_write, spawn, wait, and close.",
+            "The harness implements only the CKB syscalls needed by this lock surface: load_script, load_script_hash, load_witness, load_cell_by_field, load_cell_data, pipe, pipe_write, spawn, wait, and close.",
             "The spawn syscall is harness-backed and immediately executes the staged child verifier ELF in a nested ckb-vm instance.",
             "Constructs a consensus-packed transaction shape and a ckb-types ResolvedTransaction.",
             "Executes the resolved lock ScriptGroup with ckb-script TransactionScriptsVerifier.",
@@ -1482,15 +1526,16 @@ fn resolved_script_consensus() -> Consensus {
 fn build_witness(intent: &[u8], pubkey: &[u8; 32], signature: &[u8; 64]) -> Vec<u8> {
     let sig_payload = build_signature_payload(pubkey, signature);
     let state_hash_commitment = [0u8; 32];
-    let mut witness =
+    let mut payload =
         Vec::with_capacity(LOCK_WITNESS_MAGIC.len() + 4 + intent.len() + state_hash_commitment.len() + 4 + sig_payload.len());
-    witness.extend_from_slice(LOCK_WITNESS_MAGIC);
-    witness.extend_from_slice(&(intent.len() as u32).to_le_bytes());
-    witness.extend_from_slice(intent);
-    witness.extend_from_slice(&state_hash_commitment);
-    witness.extend_from_slice(&(sig_payload.len() as u32).to_le_bytes());
-    witness.extend_from_slice(&sig_payload);
-    witness
+    payload.extend_from_slice(LOCK_WITNESS_MAGIC);
+    payload.extend_from_slice(&(intent.len() as u32).to_le_bytes());
+    payload.extend_from_slice(intent);
+    payload.extend_from_slice(&state_hash_commitment);
+    payload.extend_from_slice(&(sig_payload.len() as u32).to_le_bytes());
+    payload.extend_from_slice(&sig_payload);
+
+    packed::WitnessArgs::new_builder().input_type(Some(CkbBytes::from(payload)).pack()).build().as_bytes().to_vec()
 }
 
 fn build_input_cell(authority_hash: &[u8; 32], policy_hash: &[u8; 32]) -> Vec<u8> {

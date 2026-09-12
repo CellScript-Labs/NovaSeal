@@ -16,7 +16,9 @@ cargo run --manifest-path harness/ckb_vm/Cargo.toml --bin novaseal_parent_lock_h
 The harness runs the compiled parent `btc_authority` lock ELF in `ckb-vm` and implements the narrow syscall set needed by that lock:
 
 - `load_script`
+- `load_script_hash`
 - `load_witness`
+- `load_cell_by_field`
 - `load_cell_data`
 - VM2 `pipe`
 - VM2 `pipe_write`
@@ -55,11 +57,11 @@ accepted=1
 rejected=3
 matched_expected=4
 mismatched=0
-parent_max_cycles=64389
+parent_max_cycles=48705
 child_max_cycles=3467834
-resolved_script_verifier_max_cycles=3699141
-full_transaction_verifier_max_cycles=3699141
-max_consensus_tx_size_bytes=859
+resolved_script_verifier_max_cycles=3679593
+full_transaction_verifier_max_cycles=3679593
+max_consensus_tx_size_bytes=879
 max_output_occupied_capacity_shannons=21900000000
 min_capacity_margin_shannons=10000000000
 capacity_shape_checks_passed=true
@@ -77,7 +79,7 @@ Cases:
 
 This is stronger than child-only evidence because the parent lock now constructs the IPC envelope, calls VM2 spawn, waits for the child, observes the child exit status, and the official `ckb-script` lock-group and full transaction script verifiers match the expected result for the four authority cases.
 
-The parent lock now parses the same 398-byte `CSARGv1` witness payload shape as the state action: `NovaSealSignedIntentV0`, `state_hash_commitment`, then `SignaturePayload`. The signed intent already contains `expected_receipt_hash`; the lock ignores the state commitment, but the shared payload removes the former witness-format split between lock and type/action execution.
+The parent lock now parses the same 398-byte `CSARGv1` payload shape as the state action from a canonical 418-byte `WitnessArgs.input_type` witness: `NovaSealSignedIntentV0`, `state_hash_commitment`, then `SignaturePayload`. The signed intent already contains `expected_receipt_hash`; the lock ignores the state commitment, but the shared placement removes the former witness-format split between lock and type/action execution.
 
 It is still not production acceptance evidence:
 

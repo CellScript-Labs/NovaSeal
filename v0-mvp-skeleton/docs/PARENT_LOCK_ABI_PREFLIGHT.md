@@ -32,9 +32,9 @@ The preflight currently requires:
 - `expected_btc_authority_hash` consumes exactly 32 Script.args bytes.
 - Script.args u32 decoding does not clobber its own base pointer.
 - `expected_btc_authority_hash` is not rebound from `Input#N` or `CellDep#N` data.
-- the protected `cell` remains bound from `Input#0` cell data.
+- the protected `cell` remains bound from `GroupInput#0` cell data.
 - `spawn_with_fd`, VM2 spawn, wait, pipe/write, and close syscall surfaces remain visible.
 
 ## Boundary
 
-This is not CKB VM transaction evidence. It proves the generated parent lock artifact is structurally ready. The parent-lock CKB VM harness now provides the execution layer and transaction-shape measurement in `docs/PARENT_LOCK_CKB_VM_HARNESS.md`; the remaining gap is resolved transaction execution with real ScriptGroup/cell_deps and fixture coverage.
+This preflight is not itself CKB VM transaction evidence. It proves the generated parent lock artifact is structurally ready; the separate parent-lock and combined harnesses provide resolved ScriptGroup/cell-dep execution and fixture coverage in `docs/PARENT_LOCK_CKB_VM_HARNESS.md` and `docs/COMBINED_TX_HARNESS.md`.

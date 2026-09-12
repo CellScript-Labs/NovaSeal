@@ -94,7 +94,7 @@ state_type_source_fixture_requires_lock_or_external_context=2
 state_type_schema_cell_intent_mismatch_detected=false
 state_type_schema_cell_intent_aligned=true
 shared_lock_type_witness_abi_aligned=true
-shared_lock_type_witness_size_bytes=398
+shared_lock_type_witness_size_bytes=418
 combined_full_transaction_executed=true
 combined_full_transaction_matched_expected=true
 combined_full_transaction_total_cases=11
@@ -107,10 +107,10 @@ combined_fee_shape_checks_passed=true
 combined_under_capacity_shape_rejects=true
 combined_min_fee_shannons=100000
 combined_max_fee_shannons=100000
-combined_full_transaction_max_cycles=7565341
-combined_max_consensus_tx_size_bytes=1484
+combined_full_transaction_max_cycles=7444227
+combined_max_consensus_tx_size_bytes=1504
 combined_max_output_occupied_capacity_shannons=70700000000
-parent_lock_max_consensus_tx_size_bytes=859
+parent_lock_max_consensus_tx_size_bytes=879
 parent_lock_max_output_occupied_capacity_shannons=21900000000
 ```
 
@@ -144,7 +144,7 @@ It does prove:
   reject, and wrong-pubkey-valid-signature reject when present.
 - the separate parent-lock report records consensus-packed transaction-shape size, occupied-capacity, under-capacity shape checks, resolved lock-group verifier execution, and full transaction script-verifier execution when present.
 - the separate state-type report records all eleven `key_auth_transition` fixture runs in CKB VM at action/type scope when present.
-- the parent-lock and state-type reports now both exercise the same 398-byte `CSARGv1` witness payload order (`NovaSealSignedIntentV0`, `state_hash_commitment`, `SignaturePayload`), which removes a concrete blocker for same-input lock+type transaction evidence.
+- the parent-lock and state-type reports now both exercise the same 398-byte `CSARGv1` payload order (`NovaSealSignedIntentV0`, `state_hash_commitment`, `SignaturePayload`) inside a canonical 418-byte `WitnessArgs.input_type` witness, which removes a concrete blocker for same-input lock+type transaction evidence.
 - the separate combined transaction report records all eleven fixtures through official `ckb-script` full transaction verification with both lock and type/action ScriptGroups present when available.
 - the separate combined transaction report records builder-shape fee, occupied-capacity, under-capacity, and code-dep role checks when available.
 - the separate state-type report records that `wrong_signature_reject` is lock scope and that schema/.cell intent layout alignment is now closed for `old_cell: OutPoint`.

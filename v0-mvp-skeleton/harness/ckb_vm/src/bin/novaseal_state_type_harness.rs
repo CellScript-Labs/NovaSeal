@@ -13,6 +13,7 @@ use std::{
 };
 
 use blake2b_simd::Params as Blake2bParams;
+use ckb_types::{bytes::Bytes as CkbBytes, packed, prelude::*};
 use ckb_vm::{
     Bytes, DefaultCoreMachine, DefaultMachineBuilder, ISA_B, ISA_IMC, ISA_MOP, SparseMemory, SupportMachine, Syscalls, TraceMachine,
     WXorXMemory,
@@ -301,14 +302,14 @@ impl StateTypeSyscalls {
         };
         let source_bytes = match source {
             CKB_SOURCE_INPUT | CKB_SOURCE_GROUP_INPUT if index == 0 => self.input_cell_data.clone(),
-            CKB_SOURCE_OUTPUT | CKB_SOURCE_GROUP_OUTPUT => match self.output_cell_data.get(index) {
-                Some(data) => data.clone(),
-                None => {
+            CKB_SOURCE_OUTPUT | CKB_SOURCE_GROUP_OUTPUT => {
+                let Some(data) = self.output_cell_data.get(index) else {
                     self.trace.lock().expect("trace mutex poisoned").load_cell_data_failures += 1;
                     machine.set_register(A0, 1);
                     return Ok(());
-                }
-            },
+                };
+                data.clone()
+            }
             _ => {
                 self.trace.lock().expect("trace mutex poisoned").load_cell_data_failures += 1;
                 machine.set_register(A0, 1);
@@ -688,16 +689,17 @@ fn build_witness(intent: &[u8], state_hash_commitment: &[u8], old_cell: &[u8], w
     if !wrong_pubkey {
         signature_payload[..BYTE32_LEN].copy_from_slice(&old_cell[CELL_BTC_AUTHORITY_HASH_OFFSET..CELL_BTC_AUTHORITY_HASH_OFFSET + BYTE32_LEN]);
     }
-    let mut witness = Vec::with_capacity(
+    let mut payload = Vec::with_capacity(
         LOCK_WITNESS_MAGIC.len() + 4 + intent.len() + state_hash_commitment.len() + 4 + signature_payload.len(),
     );
-    witness.extend_from_slice(LOCK_WITNESS_MAGIC);
-    witness.extend_from_slice(&(intent.len() as u32).to_le_bytes());
-    witness.extend_from_slice(intent);
-    witness.extend_from_slice(state_hash_commitment);
-    witness.extend_from_slice(&(signature_payload.len() as u32).to_le_bytes());
-    witness.extend_from_slice(&signature_payload);
-    witness
+    payload.extend_from_slice(LOCK_WITNESS_MAGIC);
+    payload.extend_from_slice(&(intent.len() as u32).to_le_bytes());
+    payload.extend_from_slice(intent);
+    payload.extend_from_slice(state_hash_commitment);
+    payload.extend_from_slice(&(signature_payload.len() as u32).to_le_bytes());
+    payload.extend_from_slice(&signature_payload);
+
+    packed::WitnessArgs::new_builder().input_type(Some(CkbBytes::from(payload)).pack()).build().as_bytes().to_vec()
 }
 
 fn previous_output_from_fixture(fixture: &Value, intent: &[u8]) -> Result<Vec<u8>, HarnessError> {

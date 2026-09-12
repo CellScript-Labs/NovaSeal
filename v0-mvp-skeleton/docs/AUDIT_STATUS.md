@@ -142,7 +142,7 @@ rejected=8
 state_type_matched_expected=11
 source_fixture_matched_by_state_type_only=9
 source_fixture_requires_lock_or_external_context=2
-shared witness payload size=398 bytes
+serialized witness size=418 bytes (398-byte `CSARGv1` payload in `WitnessArgs.input_type`)
 ```
 
 The two unmatched source fixtures are expected: `wrong_signature_reject` and
@@ -168,10 +168,10 @@ expected_accept=1
 expected_reject=10
 matched_expected=11
 node_stack_matched_expected=11
-shared_witness_size_bytes=398
-max_full_transaction_cycles=7565341
-max_node_stack_cycles=7565341
-max_consensus_tx_size_bytes=1484
+shared_witness_size_bytes=418
+max_full_transaction_cycles=7444227
+max_node_stack_cycles=7444227
+max_consensus_tx_size_bytes=1504
 max_output_occupied_capacity_shannons=70700000000
 ```
 
